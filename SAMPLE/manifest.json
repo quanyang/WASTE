@@ -1,0 +1,40 @@
+{  	
+	"manifest_version": 2,
+  	"name": "WASTE",
+  	"version": "0.0.1",
+	"default_locale": "en",
+  	"author": "YQYAMY",
+	"description": "CS2107 Project",
+	"icons": {
+		"16": "imgs/icon16.png",
+		"48": "imgs/icon48.png",
+		"128": "imgs/icon128.png"
+	},
+	
+	
+    "browser_action": {
+    	"default_title": "Enter WASTE",
+    	"default_icon": {
+    		"19": "imgs/icon19.png",
+    		"38": "imgs/icon38.png"
+    	},
+    	"default_popup": "popup.html"
+  	},
+  	
+    "background": {
+    	"scripts": ["background.js"],
+    	"persistent": false
+	},
+	"options_page": "options.html",
+	
+	
+	"permissions": [
+		"activeTab",
+		"storage",
+		"background",
+		"contextMenus",
+		"webNavigation",
+		"webRequest"
+	],
+	
+}
