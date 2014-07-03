@@ -33,6 +33,7 @@
 		"storage",
 		"background",
 		"contextMenus",
+		"tabs",
 		"webNavigation",
 		"webRequest"
 	],
