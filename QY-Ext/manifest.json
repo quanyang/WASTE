@@ -26,6 +26,12 @@
         },
     	"default_popup": "popup.html"
   	},
+    "content_scripts": [
+        {
+        "matches": ["http://*/*", "https://*/*"],
+        "js": ["content.js"]
+    }
+    ],
     "background": {
         "scripts": ["background.js"]
 	}

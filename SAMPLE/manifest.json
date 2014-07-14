@@ -25,7 +25,11 @@
     	"persistent": false
 	},
 	"options_page": "options.html",
-	
+	"content_scripts": [{
+    "matches": ["http://*/*"],
+    "js": ["content.js"],
+    "run_at": "document_start"
+    }],
 	
 	"permissions": [
 		"activeTab",

