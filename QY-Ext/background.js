@@ -1,7 +1,3 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 // A generic onclick callback function.
 function genericOnClick(info, tab) {
   //    alert("item " + info.menuItemId + " was clicked");
@@ -9,54 +5,58 @@ function genericOnClick(info, tab) {
   //    alert("tab: " + JSON.stringify(tab));
 }
 var payload = [
-    ["sql1","';--"],
-    ["sql2","' or '1' = '1"]
+    ["sql1",["","';--"]],
+    ["sql2",["' or '1' = '1"]]
 ];
 
-function sqlOnClick(type,info,tab) {
+
+chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
     payload.forEach(function(payloads){
-       if (type == payloads[0]) {
-           chrome.tabs.sendRequest(tab.id,payloads[1]);
+       if (info.menuItemId == payloads[0]) {
+           chrome.tabs.sendMessage(tab.id,payloads[1]);
        } 
     });
-}
+});
+
+
 
 // Create one test item for each context type.
-var sql = chrome.contextMenus.create({"title": "SQL injection","contexts":["editable"]});
-var xss = chrome.contextMenus.create({"title": "Cross-site Scripting","contexts":["editable"]});
-var xsrf = chrome.contextMenus.create({"title": "Cross-site Request Forgery","contexts":["editable"]});
 
 //makes into array for easier editing in future.
+
+var sql = chrome.contextMenus.create({"title": "SQL injection","id":"sql","contexts":["editable"],"documentUrlPatterns":["http://*/*", "https://*/*"]});
+var xss = chrome.contextMenus.create({"title": "Cross-site Scripting","id":"xss","contexts":["editable"]});
+var xsrf = chrome.contextMenus.create({"title": "Cross-site Request Forgery","id":"xsrf","contexts":["editable"]});
+
 var sqlchild = [
-    {"title": "Test for vulnerability", "parentId": sql, "onclick": function(info, tab){sqlOnClick("sql1",info,tab)},"contexts":["editable"]},
-    {"title": "Login Field", "parentId": sql, "onclick": function(info, tab){sqlOnClick("sql2",info,tab)},"contexts":["editable"]}
+{"title": "Test for vulnerability", "id":"sql1", "parentId": sql, "contexts":["editable"]},
+{"title": "Login Field","id":"sql2", "parentId": sql, "contexts":["editable"]}
 ];
 var xsschild = [
-    {"title": "Test for vulnerability", "parentId": xss, "onclick": genericOnClick,"contexts":["editable"]},
-    {"title": "Insert Image", "parentId": xss, "onclick": genericOnClick,"contexts":["editable"]},
-    {"title": "Insert Script", "parentId": xss, "onclick": genericOnClick,"contexts":["editable"]},
-    {"title": "Insert Redirection", "parentId": xss, "onclick": genericOnClick,"contexts":["editable"]}
+{"title": "Test for vulnerability", "id":"xss1","parentId": xss, "contexts":["editable"]},
+{"title": "Insert Image", "id":"xss2","parentId": xss, "contexts":["editable"]},
+{"title": "Insert Script","id":"xss3", "parentId": xss, "contexts":["editable"]},
+{"title": "Insert Redirection","id":"xss4", "parentId": xss, "contexts":["editable"]}
 ];
 var xsrfchild = [
-  {"title": "Test for vulnerability", "parentId": xsrf, "onclick": genericOnClick,"contexts":["editable"]}
-];
+{"title": "Test for vulnerability", "id":"xsrf1","parentId": xsrf, "contexts":["editable"]}
+];     
+
 
 var sqlchilds = [];
-    sqlchild.forEach(function(entry){
-        sqlchilds.push(chrome.contextMenus.create(entry));
-    });
+sqlchild.forEach(function(entry){
+sqlchilds.push(chrome.contextMenus.create(entry));
+});
 
 var xsschilds = [];
-    xsschild.forEach(function(entry){
-        xsschilds.push(chrome.contextMenus.create(entry));
-    });
+xsschild.forEach(function(entry){
+xsschilds.push(chrome.contextMenus.create(entry));
+});
 
 var xsrfchilds = [];
-    xsrfchild.forEach(function(entry){
-        xsrfchilds.push(chrome.contextMenus.create(entry));
-    });
-   
-    
+xsrfchild.forEach(function(entry){
+xsrfchilds.push(chrome.contextMenus.create(entry));
+});
 
 
 /*
