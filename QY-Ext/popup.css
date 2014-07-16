@@ -1,0 +1,9 @@
+body {
+margin:0px;
+background-color:#f8f8f8;
+}
+.separator {
+width: 100%;
+border-top: 2px groove #FFF;
+margin: 5px -5px 5px -3px;
+}
