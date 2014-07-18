@@ -1,0 +1,26 @@
+body {
+    margin:3px;
+    font:7px;
+    background-color:#f8f8f8;
+    outline:none;
+}
+.separator {
+    width: 100%;
+    border-top: 2px groove #FFF;
+    margin: 5px -5px 5px -3px;
+}
+input,a,li {
+    outline:none;
+}
+
+.result td,th { 
+    border:1px solid black;
+    border-bottom:0px;
+    border-right:0px;
+}
+.result td,th:last-child {
+    border-right:1px solid black;
+}
+.result tr:last-child td,th{
+    border-bottom:1px solid black;
+}
