@@ -1,9 +1,16 @@
 body {
-margin:0px;
-background-color:#f8f8f8;
+    margin:3px;
+    font:7px;
+    background-color:#f8f8f8;
+    width:300px;
+    min-width:300px;    
+    outline:none;
 }
 .separator {
-width: 100%;
-border-top: 2px groove #FFF;
-margin: 5px -5px 5px -3px;
+    width: 100%;
+    border-top: 2px groove #FFF;
+    margin: 5px -5px 5px -3px;
+}
+input,a,li {
+    outline:none;
 }
