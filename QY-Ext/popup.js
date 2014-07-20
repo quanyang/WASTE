@@ -18,14 +18,17 @@ $(function() {
                 //send message to content tab to begin attack based on payload
                 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                     chrome.tabs.sendMessage(tabs[0].id, 
-                                            {"type":"start","payload":payload[ $(".payload1 option:selected").val()] }
+                                            {"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val()] }
                                            );
                 });
 
+                
+            chrome.storage.sync.set({'scanning':{status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],index:1}});
+
                 //start attack
-                chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
-                    // Tab opened.
-                });
+                //chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                // Tab opened.
+                //});
             });
         }
     });
