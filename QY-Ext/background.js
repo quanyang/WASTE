@@ -1,8 +1,8 @@
 // A generic onclick callback function.
 function genericOnClick(info, tab) {
-  //    alert("item " + info.menuItemId + " was clicked");
-  //    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
-  //    alert("tab: " + JSON.stringify(tab));
+    //    alert("item " + info.menuItemId + " was clicked");
+    //    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
+    //    alert("tab: " + JSON.stringify(tab));
 }
 var payload = [
     ["sql1",["","';--"]],
@@ -32,17 +32,17 @@ var xss = chrome.contextMenus.create({"title": "Cross-site Scripting","id":"xss"
 var xsrf = chrome.contextMenus.create({"title": "Cross-site Request Forgery","id":"xsrf","contexts":["editable"]});
 */
 var sqlchild = [
-{"title": "Test for vulnerability", "id":"sql1", "parentId": sql, "contexts":["editable"]},
-{"title": "Login Field","id":"sql2", "parentId": sql, "contexts":["editable"]}
+    {"title": "Test for vulnerability", "id":"sql1", "parentId": sql, "contexts":["editable"]},
+    {"title": "Login Field","id":"sql2", "parentId": sql, "contexts":["editable"]}
 ];
 var xsschild = [
-{"title": "Test for vulnerability", "id":"xss1","parentId": xss, "contexts":["editable"]},
-{"title": "Insert Image", "id":"xss2","parentId": xss, "contexts":["editable"]},
-{"title": "Insert Script","id":"xss3", "parentId": xss, "contexts":["editable"]},
-{"title": "Insert Redirection","id":"xss4", "parentId": xss, "contexts":["editable"]}
+    {"title": "Test for vulnerability", "id":"xss1","parentId": xss, "contexts":["editable"]},
+    {"title": "Insert Image", "id":"xss2","parentId": xss, "contexts":["editable"]},
+    {"title": "Insert Script","id":"xss3", "parentId": xss, "contexts":["editable"]},
+    {"title": "Insert Redirection","id":"xss4", "parentId": xss, "contexts":["editable"]}
 ];
 var xsrfchild = [
-{"title": "Test for vulnerability", "id":"xsrf1","parentId": xsrf, "contexts":["editable"]}
+    {"title": "Test for vulnerability", "id":"xsrf1","parentId": xsrf, "contexts":["editable"]}
 ];     
 
 /*
