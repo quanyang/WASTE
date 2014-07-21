@@ -20,6 +20,14 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
 });
 */
 
+chrome.extension.onMessage.addListener(
+    function(message, sender, sendResponse) {
+        if ( message.type == 'tabID' )
+        {
+            sendResponse({ tabID: sender.tab.id });
+        }
+    }
+);
 
 
 // Create one test item for each context type.
