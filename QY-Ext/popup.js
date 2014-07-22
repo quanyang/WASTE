@@ -20,11 +20,11 @@ $(function() {
                 //start attack
                 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                     chrome.tabs.sendMessage(tabs[0].id, 
-                                            {"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val()] }
+                                            {"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]}
                                            );
                 });
 
-                chrome.storage.sync.set({'scanning':{status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],tab:tabs[0].id,index:1}});
+                chrome.storage.sync.set({'scanning':{status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}});
 
 
                 // open scan result page
@@ -67,26 +67,34 @@ $(function() {
     });
 });
 
+//payload[0] = category
+//payload[1] = Name of scan
+//payload[2] = id of scan
+//payload[3] = attack parameter
+//  payload[3][*][0] = fields to target ( * = everything )
+//  payload[3][*][1] = payload to inject.
+//payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] )  
+
 var payload = [
     ["sql", "Test for vulnerability", "sql1",
-     ["';--"]
+     [["*","';--"],["*","'--"]]
     ],
     ["sql", "Login Field","sql2",
-     ["' or '1' = '1"]
+     [["*","' or '1' = '1"]]
     ],
     ["xss", "Test for vulnerability","xss1",
-     [""]
+     [["*",""]]
     ],
     ["xss", "Insert Image","xss2",
-     [""]
+     [["*",""]]
     ],
     ["xss", "Insert Script","xss3",
-     [""]
+     [["*",""]]
     ],
     ["xss", "Insert Redirection","xss4",
-     [""]
+     [["*",""]]
     ],
     ["xsrf", "Test for vulnerability", "xsrf1",
-     [""]
+     [["*",""]]
     ]
 ];
