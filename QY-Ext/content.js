@@ -25,30 +25,28 @@ function checkIfShouldScan(tabId){
 
             //scan for signature
             //console.log(document.documentElement.outerHTML);
-            var index;
+            var index2;
             var vulnerability;
 
-            for(index=0;index<obj.scanning.payload[4].length;index++){
+            for(index2=0;index2<obj.scanning.payload[4].length;index2++){
                 //depending on signature, do different stuff
                 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
 
-                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index],"i"))){
-
+                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
                     //send message to process.html to record results
-
                     chrome.runtime.sendMessage(
                         {
                             result: [
                                 obj.scanning.scanId,
                                 attackUrl,
                                 obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                obj.scanning.input,
                                 obj.scanning.payload[3][obj.scanning.payloadId][1],
-                                obj.scanning.payload[4][index],
+                                obj.scanning.payload[4][index2],
                                 "Yes"]
                         }
                         , function(response) {
                         });
-
 
                 }
 
@@ -63,6 +61,7 @@ function checkIfShouldScan(tabId){
             if ( location == attackUrl ) {
                 chrome.storage.sync.set({
                     'scanning':{
+                        input:obj.scanning.input,
                         scanId:obj.scanning.scanId,
                         status:true,
                         url:attackUrl,
@@ -90,7 +89,7 @@ function scan(payload,url,index,payloadId) {
     if(payloadId>=payload[3].length){
 
         //done
-        chrome.storage.sync.set({'scanning':{scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+        chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
         alert("Scan Done!");
     }  else {
 
@@ -98,37 +97,54 @@ function scan(payload,url,index,payloadId) {
         if( index < inputs.length ){
             //Payload versatility
 
+            chrome.storage.sync.get("scanning", function(obj){
+
+                chrome.storage.sync.set({
+                    'scanning':{
+                        input:inputs[index].name,
+                        scanId:obj.scanning.scanId,
+                        status:obj.scanning.status,
+                        url:obj.scanning.url,
+                        payload:obj.scanning.payload,
+                        payloadId:obj.scanning.payloadId,
+                        tab:obj.scanning.tab,
+                        index:obj.scanning.index
+                    }
+                },function() {
+                    if (payload[3][payloadId][0] == "*"){
+
+                        inputs[index].value = payload[3][payloadId][1];
+                        inputs[index].style.outline = "none";
+                        inputs[index].style.border = "red 2px solid";
+                        inputs[index].style.boxShadow  = "0 0 10px red";
+                        HTMLFormElement.prototype.submit.call(inputs[index].form);
+
+                    } else {
+
+                        if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+
+                            inputs[index].value = payload[3][payloadId][1];
+                            inputs[index].style.outline = "none";
+                            inputs[index].style.border = "red 2px solid";
+                            inputs[index].style.boxShadow  = "0 0 10px red";
+                            HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+                        } else {
+                            location = url;
+                        }
+                    }
+                });
+
+            });
             //console.log(payload[3]);
             //compare name of input with payload[3][1];
-            if (payload[3][payloadId][0] == "*"){
-
-                inputs[index].value = payload[3][payloadId][1];
-                inputs[index].style.outline = "none";
-                inputs[index].style.border = "red 2px solid";
-                inputs[index].style.boxShadow  = "0 0 10px red";
-                HTMLFormElement.prototype.submit.call(inputs[index].form);
-
-            } else {
-
-                if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
-
-                    inputs[index].value = payload[3][payloadId][1];
-                    inputs[index].style.outline = "none";
-                    inputs[index].style.border = "red 2px solid";
-                    inputs[index].style.boxShadow  = "0 0 10px red";
-                    HTMLFormElement.prototype.submit.call(inputs[index].form);     
-
-                } else {
-                    location = url;
-                }
-            }
-
 
         } else {
             //else payloadId++
             chrome.storage.sync.get("scanning", function(obj){
                 chrome.storage.sync.set({
                     'scanning':{
+                        input:obj.scanning.input,
                         scanId:obj.scanning.scanId,
                         status:true,
                         url:obj.scanning.url,
