@@ -17,24 +17,29 @@ $(document).ready(function(){
 
 function checkIfShouldScan(tabId){
 
-    var scanStatus;
-    var attackUrl;
-
     chrome.storage.sync.get("scanning", function(obj){
-        scanStatus = obj.scanning.status;
-        attackUrl = obj.scanning.url;
+        var scanStatus = obj.scanning.status;
+        var attackUrl = obj.scanning.url;
         //make sure the scan is on correct tab
         if (scanStatus && obj.scanning.tab == tabId) {
 
             //scan for signature
+            //console.log(document.documentElement.outerHTML);
+            var index;
+            var vulnerability;
+            
+            for(index=0;index<obj.scanning.payload[4].length;index++){
+                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index],"i"))){
+                    console.log("vulnerable: "+obj.scanning.payload[4][index]);
+                }
+            }
 
             //record results
 
 
             //revert back to initial page regardless of current page ( Because post will not change the url )
-            setTimeout(function() {
-                location = attackUrl;
-            },1000);
+            location = attackUrl;
+
             //next payload
             if ( location == attackUrl ) {
                 chrome.storage.sync.set({
@@ -76,19 +81,18 @@ function scan(payload,url,index,payloadId) {
             //console.log(payload[3]);
             //compare name of input with payload[3][1];
             if (payload[3][payloadId][0] == "*"){
-                inputs[index].value = payload[3][payloadId][1];
 
+                inputs[index].value = payload[3][payloadId][1];
                 inputs[index].style.outline = "none";
                 inputs[index].style.border = "red 2px solid";
                 inputs[index].style.boxShadow  = "0 0 10px red";
-
                 HTMLFormElement.prototype.submit.call(inputs[index].form);
+
             } else {
-                
+
                 if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
 
                     inputs[index].value = payload[3][payloadId][1];
-
                     inputs[index].style.outline = "none";
                     inputs[index].style.border = "red 2px solid";
                     inputs[index].style.boxShadow  = "0 0 10px red";

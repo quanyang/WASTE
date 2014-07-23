@@ -27,10 +27,11 @@ $(function() {
                 chrome.storage.sync.set({'scanning':{status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}});
 
 
-                // open scan result page
-                //chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                // open scan result page 
+                //note : make sure the tab is not opened already. record tab id in storage
+                chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
                 // Tab opened.
-                //});
+                });
             });
         }
     });
@@ -77,7 +78,8 @@ $(function() {
 
 var payload = [
     ["sql", "Test for vulnerability", "sql1",
-     [["*","';--"],["*","'--"]]
+     [["*","';--"],["*","'--"]],
+     ["An error occured: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to","error"]
     ],
     ["sql", "Login Field","sql2",
      [["^.*username.*$","' or '1' = '1"]]
