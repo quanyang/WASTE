@@ -16,11 +16,11 @@ $(document).ready(function(){
 
 
 function checkIfShouldScan(tabId){
+
     var scanStatus;
     var attackUrl;
 
     chrome.storage.sync.get("scanning", function(obj){
-        console.log(obj);
         scanStatus = obj.scanning.status;
         attackUrl = obj.scanning.url;
         //make sure the scan is on correct tab
@@ -35,13 +35,12 @@ function checkIfShouldScan(tabId){
             setTimeout(function() {
                 location = attackUrl;
             },1000);
-
             //next payload
             if ( location == attackUrl ) {
                 chrome.storage.sync.set({
                     'scanning':{
                         status:true,
-                        url:obj.scanning.url,
+                        url:attackUrl,
                         payload:obj.scanning.payload,
                         payloadId:obj.scanning.payloadId,
                         tab:obj.scanning.tab,
@@ -60,41 +59,62 @@ function scan(payload,url,index,payloadId) {
     //textarea, select(one time suffice) $('select option:selected')
 
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
-    console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
+    //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
+
+
     if(payloadId>=payload[3].length){
+
+        //done
         chrome.storage.sync.set({'scanning':{status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
         alert("Scan Done!");
-    } 
-    if( index < inputs.length ){
-        //Payload versatility
+    }  else {
 
-        console.log(payload[3]);
-        //compare name of input with payload[3][1];
-        console.log(payload[3][payloadId][0]+" "+payload[3][payloadId][1]);
-        //inputs[index].name;
+        //scan not done
+        if( index < inputs.length ){
+            //Payload versatility
 
-        inputs[index].value = payload[3][payloadId][1];
+            //console.log(payload[3]);
+            //compare name of input with payload[3][1];
+            if (payload[3][payloadId][0] == "*"){
+                inputs[index].value = payload[3][payloadId][1];
 
-        inputs[index].style.outline = "none";
-        inputs[index].style.border = "red 2px solid";
-        inputs[index].style.boxShadow  = "0 0 10px red";
+                inputs[index].style.outline = "none";
+                inputs[index].style.border = "red 2px solid";
+                inputs[index].style.boxShadow  = "0 0 10px red";
 
-        HTMLFormElement.prototype.submit.call(inputs[index].form);
+                HTMLFormElement.prototype.submit.call(inputs[index].form);
+            } else {
+                
+                if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
 
-    } else {
-        //else payloadId++
-        chrome.storage.sync.get("scanning", function(obj){
-            chrome.storage.sync.set({
-                'scanning':{
-                    status:true,
-                    url:obj.scanning.url,
-                    payload:obj.scanning.payload,
-                    payloadId:obj.scanning.payloadId+1,
-                    tab:obj.scanning.tab,
-                    index:0
+                    inputs[index].value = payload[3][payloadId][1];
+
+                    inputs[index].style.outline = "none";
+                    inputs[index].style.border = "red 2px solid";
+                    inputs[index].style.boxShadow  = "0 0 10px red";
+                    HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+                } else {
+                    location = url;
                 }
+            }
+
+
+        } else {
+            //else payloadId++
+            chrome.storage.sync.get("scanning", function(obj){
+                chrome.storage.sync.set({
+                    'scanning':{
+                        status:true,
+                        url:obj.scanning.url,
+                        payload:obj.scanning.payload,
+                        payloadId:obj.scanning.payloadId+1,
+                        tab:obj.scanning.tab,
+                        index:0
+                    }
+                });
             });
-        });
+        }
 
     }
 

@@ -71,8 +71,8 @@ $(function() {
 //payload[1] = Name of scan
 //payload[2] = id of scan
 //payload[3] = attack parameter
-//  payload[3][*][0] = fields to target ( * = everything )
-//  payload[3][*][1] = payload to inject.
+//  payload[3][i][0] = fields to target ( * = everything )
+//  payload[3][i][1] = payload to inject.
 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] )  
 
 var payload = [
@@ -80,7 +80,7 @@ var payload = [
      [["*","';--"],["*","'--"]]
     ],
     ["sql", "Login Field","sql2",
-     [["*","' or '1' = '1"]]
+     [["^.*username.*$","' or '1' = '1"]]
     ],
     ["xss", "Test for vulnerability","xss1",
      [["*",""]]
