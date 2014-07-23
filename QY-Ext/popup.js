@@ -23,15 +23,28 @@ $(function() {
                                             {"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]}
                                            );
                 });
+                var scanId;
+                chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
+                    scanId = res.scanIndex;
 
-                chrome.storage.sync.set({'scanning':{status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}});
+                    chrome.storage.sync.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}});
 
+                });
 
                 // open scan result page 
-                //note : make sure the tab is not opened already. record tab id in storage
-                chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
-                // Tab opened.
-                });
+                var index;
+                var exist = false;
+                for(index = 0; index< chrome.extension.getViews().length;index++){
+                    if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+                        exist=true; 
+                    } 
+                }
+                if(!exist){
+                    chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                        // Tab opened.
+                        chrome.storage.sync.set({'result':{id:tab.id}});
+                    });
+                }
             });
         }
     });
@@ -76,7 +89,7 @@ $(function() {
 //  payload[3][i][1] = payload to inject.
 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] )  
 
-var payload = [
+var payload = [ 
     ["sql", "Test for vulnerability", "sql1",
      [["*","';--"],["*","'--"]],
      ["An error occured: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to","error"]

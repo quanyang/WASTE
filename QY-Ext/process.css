@@ -13,14 +13,14 @@ input,a,li {
     outline:none;
 }
 
-.result td,th { 
+.result td,.result th { 
     border:1px solid black;
     border-bottom:0px;
     border-right:0px;
 }
-.result td,th:last-child {
+.result td:last-child,.result th:last-child {
     border-right:1px solid black;
 }
-.result tr:last-child td,th{
+.result tr:last-child td,.result tr:last-child th{
     border-bottom:1px solid black;
 }

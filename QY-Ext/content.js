@@ -27,14 +27,33 @@ function checkIfShouldScan(tabId){
             //console.log(document.documentElement.outerHTML);
             var index;
             var vulnerability;
-            
-            for(index=0;index<obj.scanning.payload[4].length;index++){
-                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index],"i"))){
-                    console.log("vulnerable: "+obj.scanning.payload[4][index]);
-                }
-            }
 
-            //record results
+            for(index=0;index<obj.scanning.payload[4].length;index++){
+                //depending on signature, do different stuff
+                //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
+
+                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index],"i"))){
+
+                    //send message to process.html to record results
+
+                    chrome.runtime.sendMessage(
+                        {
+                            result: [
+                                obj.scanning.scanId,
+                                attackUrl,
+                                obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                obj.scanning.payload[3][obj.scanning.payloadId][1],
+                                obj.scanning.payload[4][index],
+                                "Yes"]
+                        }
+                        , function(response) {
+                        });
+
+
+                }
+
+
+            }
 
 
             //revert back to initial page regardless of current page ( Because post will not change the url )
@@ -44,6 +63,7 @@ function checkIfShouldScan(tabId){
             if ( location == attackUrl ) {
                 chrome.storage.sync.set({
                     'scanning':{
+                        scanId:obj.scanning.scanId,
                         status:true,
                         url:attackUrl,
                         payload:obj.scanning.payload,
@@ -70,7 +90,7 @@ function scan(payload,url,index,payloadId) {
     if(payloadId>=payload[3].length){
 
         //done
-        chrome.storage.sync.set({'scanning':{status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+        chrome.storage.sync.set({'scanning':{scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
         alert("Scan Done!");
     }  else {
 
@@ -109,6 +129,7 @@ function scan(payload,url,index,payloadId) {
             chrome.storage.sync.get("scanning", function(obj){
                 chrome.storage.sync.set({
                     'scanning':{
+                        scanId:obj.scanning.scanId,
                         status:true,
                         url:obj.scanning.url,
                         payload:obj.scanning.payload,

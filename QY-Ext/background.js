@@ -9,7 +9,6 @@ var payload = [
     ["sql2",["' or '1' = '1"]]
 ];
 
-
 /*
 chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
     payload.forEach(function(payloads){
@@ -19,12 +18,17 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
     });
 });
 */
+var scanIndex = 0;
 
 chrome.extension.onMessage.addListener(
     function(message, sender, sendResponse) {
         if ( message.type == 'tabID' )
         {
             sendResponse({ tabID: sender.tab.id });
+        }
+        if (message.type == 'scanIndex'){
+            sendResponse({scanIndex: scanIndex});
+            scanIndex++;
         }
     }
 );
@@ -38,7 +42,7 @@ chrome.extension.onMessage.addListener(
 //var sql = chrome.contextMenus.create({"title": "SQL injection","id":"sql","contexts":["editable"]});
 var xss = chrome.contextMenus.create({"title": "Cross-site Scripting","id":"xss","contexts":["editable"]});
 var xsrf = chrome.contextMenus.create({"title": "Cross-site Request Forgery","id":"xsrf","contexts":["editable"]});
-*/
+
 var sqlchild = [
     {"title": "Test for vulnerability", "id":"sql1", "parentId": sql, "contexts":["editable"]},
     {"title": "Login Field","id":"sql2", "parentId": sql, "contexts":["editable"]}
@@ -52,6 +56,7 @@ var xsschild = [
 var xsrfchild = [
     {"title": "Test for vulnerability", "id":"xsrf1","parentId": xsrf, "contexts":["editable"]}
 ];     
+*/
 
 /*
 var sqlchilds = [];
