@@ -5,12 +5,12 @@ document.addEventListener('mousedown', function(event){
 }, true);
 
 function escapeHtml(text) {
-  return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 $(document).ready(function(){ 
 
@@ -38,24 +38,66 @@ function checkIfShouldScan(tabId){
             for(index2=0;index2<obj.scanning.payload[4].length;index2++){
                 //depending on signature, do different stuff
                 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
-                if (obj.scanning.payload[4][index2]=="@XSS"){
-                    if($("#W\\@\\$T3").length){
-                        chrome.runtime.sendMessage(
-                            {
-                                result: [
-                                    obj.scanning.scanId,
-                                    attackUrl,
-                                    obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
-                                    obj.scanning.input,
-                                    escapeHtml(obj.scanning.payload[3][obj.scanning.payloadId][1]),
-                                    "DOM Element exists in webpage",
-                                    "Yes"]
+                if (obj.scanning.payload[4][index2].match(/^@XSS,/)){
+                    var toScan=obj.scanning.payload[4][index2].split(",");
+                    if($("#"+toScan[1]).length){
+                        if(toScan.length>2){
+                            var x=2;
+                            var vuln=true;
+                            for(;x<toScan.length;x++){
+                                if(!$("#"+toScan[1]).attr(toScan[x])){
+                                    vuln=false;
+                                }
                             }
-                            , function(response) {
+                            if(vuln){
+                                chrome.runtime.sendMessage(
+                                    {
+                                        result: [
+                                            obj.scanning.scanId,
+                                            attackUrl,
+                                            obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                            obj.scanning.input,
+                                            escapeHtml(obj.scanning.payload[3][obj.scanning.payloadId][1]),
+                                            "ID: "+toScan[1]+" and "+toScan.splice(2,2)+" attributes detected",
+                                            "Yes"]
+                                    }
+                                    , function(response) {
+                                        location = attackUrl;
+                                    });
+                            } else {
                                 location = attackUrl;
-                            });
-                    } else {
+                            }
+                        }
+
+                    }else {
                         location = attackUrl;
+                    }
+
+                } else if (obj.scanning.payload[4][index2].match(/^@XSRF,/)){
+                    if (obj.scanning.payload[4][index2].match(/^@XSRF,compare/)) {
+                        chrome.storage.sync.get("xsrfstore", function(objz){
+                            if(objz.xsrfstore.html==$('form').innerHTML){
+                                chrome.runtime.sendMessage(
+                                    {
+                                        result: [
+                                            obj.scanning.scanId,
+                                            attackUrl,
+                                            obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                            "Comparison with no inputs",
+                                            "None",
+                                            "Comparison test",
+                                            "Possible- No difference detected"]
+                                    }
+                                    , function(response) {
+                                        alert("scan is completed");
+                                        chrome.storage.sync.remove('xsrfstore');
+                                        chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+                                        location = attackUrl;
+                                    });  
+                            }
+                        });
+                    } else if (obj.scanning.payload[4][index2].match(/^@XSRF,tokencaptcha/)){
+
                     }
                 } else
                     if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
@@ -109,13 +151,14 @@ function checkIfShouldScan(tabId){
 function scan(payload,url,index,payloadId) {
     //$("input:not([type='submit']),textarea,option") except for submit
     //textarea, select(one time suffice) $('select option:selected')
-
+    console.log(payload+" "+url+" "+index+" "+payloadId);
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
     chrome.storage.sync.get("scanning", function(obj){
 
         if(payloadId>=payload[3].length){
-
+            alert("scan is completed");
+            chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
             chrome.runtime.sendMessage(
                 {
                     result: [
@@ -132,8 +175,7 @@ function scan(payload,url,index,payloadId) {
                 , function(response) {
                 });
             //done
-            alert("scan is completed");
-            chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+
 
 
 
@@ -159,6 +201,14 @@ function scan(payload,url,index,payloadId) {
                         index:obj.scanning.index
                     }
                 },function() {
+                    if (payload[0]=="xsrf"){
+                        chrome.storage.sync.set({
+                            'xsrfstore':{
+                                html: $('form').innerHTML
+                            }
+                        });
+                        location = url;
+                    } else
                     if (payload[3][payloadId][0] == "*"){
 
                         inputs[index].value = payload[3][payloadId][1];
@@ -188,20 +238,19 @@ function scan(payload,url,index,payloadId) {
 
             } else {
                 //else payloadId++
-                chrome.storage.sync.get("scanning", function(obj){
-                    chrome.storage.sync.set({
-                        'scanning':{
-                            input:obj.scanning.input,
-                            scanId:obj.scanning.scanId,
-                            status:true,
-                            url:obj.scanning.url,
-                            payload:obj.scanning.payload,
-                            payloadId:obj.scanning.payloadId+1,
-                            tab:obj.scanning.tab,
-                            index:0
-                        }
-                    });
+                chrome.storage.sync.set({
+                    'scanning':{
+                        input:obj.scanning.input,
+                        scanId:obj.scanning.scanId,
+                        status:true,
+                        url:obj.scanning.url,
+                        payload:obj.scanning.payload,
+                        payloadId:obj.scanning.payloadId+1,
+                        tab:obj.scanning.tab,
+                        index:0
+                    }
                 });
+
             }
         }
     });

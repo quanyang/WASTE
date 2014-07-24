@@ -104,8 +104,8 @@ var payload = [
      [["^.*username.*$","' or '1' = '1"]]
     ],
     ["xss", "Test for vulnerability","xss1",
-     [["*","<div id='W@$T3'></div>"]],
-     ["@XSS"]
+     [["*","<div id='w1232' href='w1232' src='w1232'></div>"]],
+     ["@XSS,w1232,href,src"]
     ],
     ["xss", "Insert Image","xss2",
      [["*",""]]
@@ -117,6 +117,7 @@ var payload = [
      [["*",""]]
     ],
     ["xsrf", "Test for vulnerability", "xsrf1",
-     [["*",""]]
-    ]
+     [["*",""]],
+     ["@XSRF,compare","@XSRF,tokencaptcha"]]
+
 ];
