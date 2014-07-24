@@ -35,10 +35,15 @@ function checkIfShouldScan(tabId){
             var index2;
             var vulnerability;
 
-            for(index2=0;index2<obj.scanning.payload[4].length;index2++){
+            for(index2=0;index2<obj.scanning.payload[4].length;index2++) {
                 //depending on signature, do different stuff
                 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
                 if (obj.scanning.payload[4][index2].match(/^@XSS,/)){
+
+
+                    //XSS
+
+
                     var toScan=obj.scanning.payload[4][index2].split(",");
                     if($("#"+toScan[1]).length){
                         if(toScan.length>2){
@@ -73,10 +78,16 @@ function checkIfShouldScan(tabId){
                         location = attackUrl;
                     }
 
-                } else if (obj.scanning.payload[4][index2].match(/^@XSRF,/)){
+
+                    //END OF XSS
+
+
+                } else if (obj.scanning.payload[4][index2].match(/^@XSRF,/)&&obj.scanning.index<2&&obj.scanning.status) {
+                    //START OF XSRF
                     if (obj.scanning.payload[4][index2].match(/^@XSRF,compare/)) {
                         chrome.storage.sync.get("xsrfstore", function(objz){
-                            if(objz.xsrfstore.html==$('form').innerHTML){
+                            if(objz.xsrfstore.html!=$('form').innerHTML){
+
                                 chrome.runtime.sendMessage(
                                     {
                                         result: [
@@ -85,64 +96,96 @@ function checkIfShouldScan(tabId){
                                             obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
                                             "Comparison with no inputs",
                                             "None",
-                                            "Comparison test",
-                                            "Possible- No difference detected"]
+                                            "Comparison test - Possible Token",
+                                            "Fail - Difference detected"]
                                     }
                                     , function(response) {
-                                        alert("scan is completed");
-                                        chrome.storage.sync.remove('xsrfstore');
-                                        chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
-                                        location = attackUrl;
                                     });  
-                            }
+
+                            } 
                         });
+
+                        chrome.storage.sync.remove('xsrfstore');
                     } else if (obj.scanning.payload[4][index2].match(/^@XSRF,tokencaptcha/)){
 
-                    }
-                } else
-                    if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
-                        //send message to process.html to record results
-                        chrome.runtime.sendMessage(
-                            {
-                                result: [
-                                    obj.scanning.scanId,
-                                    attackUrl,
-                                    obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
-                                    obj.scanning.input,
-                                    obj.scanning.payload[3][obj.scanning.payloadId][1],
-                                    obj.scanning.payload[4][index2],
-                                    "Yes"]
-                            }
-                            , function(response) {
-                                location = attackUrl;
+                        inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
+
+                        var tokenRegex = [
+                            ".*token.*",".*captcha.*",".*turing.*",".*nonce.*"
+                        ];
+                        $.each(inputs,function(key,val){
+                            tokenRegex.forEach(function(y){
+                                if(val.name.match(new RegExp(y,"i"))){
+
+                                    chrome.runtime.sendMessage(
+                                        {
+                                            result: [
+                                                obj.scanning.scanId,
+                                                attackUrl,
+                                                obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                                val.name,
+                                                "None",
+                                                "Regex test with regex: "+y,
+                                                "Fail - token/captcha detected"]
+                                        }
+                                        , function(response) {
+
+                                        });  
+                                } 
                             });
+                        });
 
-                    } else {
-                        location = attackUrl;
+
                     }
 
+                    //END OF XSRF
+                } else if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
+                    // MUST BE REGEX BASED SIGNATURE
+                    //send message to process.html to record results
+                    chrome.runtime.sendMessage(
+                        {
+                            result: [
+                                obj.scanning.scanId,
+                                attackUrl,
+                                obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                obj.scanning.input,
+                                obj.scanning.payload[3][obj.scanning.payloadId][1],
+                                obj.scanning.payload[4][index2],
+                                "Yes"]
+                        }
+                        , function(response) {
+                            location = attackUrl;
+                        });
 
+                } else {
+                    location = attackUrl;
+                }
             }
+
+
+
 
 
             //revert back to initial page regardless of current page ( Because post will not change the url )
-
-            //next payload
-            if ( location == attackUrl ) {
-                chrome.storage.sync.set({
-                    'scanning':{
-                        input:obj.scanning.input,
-                        scanId:obj.scanning.scanId,
-                        status:true,
-                        url:attackUrl,
-                        payload:obj.scanning.payload,
-                        payloadId:obj.scanning.payloadId,
-                        tab:obj.scanning.tab,
-                        index:obj.scanning.index+1
-                    }
-                });
-                scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payloadId);
-            }
+            if( obj.scanning.index!=0&& obj.scanning.payload[0]=="xsrf"){
+                scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payload[4].length+2);
+                //next payload
+            }else
+                if (location == attackUrl ) {
+                    chrome.storage.sync.set({
+                        'scanning':{
+                            input:obj.scanning.input,
+                            scanId:obj.scanning.scanId,
+                            status:true,
+                            url:attackUrl,
+                            payload:obj.scanning.payload,
+                            payloadId:obj.scanning.payloadId,
+                            tab:obj.scanning.tab,
+                            index:obj.scanning.index+1
+                        }
+                    });
+                    scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payloadId);
+                }
         }
     });
 }
@@ -156,8 +199,9 @@ function scan(payload,url,index,payloadId) {
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
     chrome.storage.sync.get("scanning", function(obj){
 
-        if(payloadId>=payload[3].length){
+        if(!obj.scanning.status||payloadId>=payload[3].length){
             alert("scan is completed");
+            chrome.storage.sync.remove('xsrfstore');
             chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
             chrome.runtime.sendMessage(
                 {
@@ -168,7 +212,7 @@ function scan(payload,url,index,payloadId) {
                         "",
                         "",
                         "",
-                        "Fail",
+                        "Uncertain",
                         "done"
                     ]
                 }
@@ -201,7 +245,7 @@ function scan(payload,url,index,payloadId) {
                         index:obj.scanning.index
                     }
                 },function() {
-                    if (payload[0]=="xsrf"){
+                    if (payload[0]=="xsrf"&&index<1){
                         chrome.storage.sync.set({
                             'xsrfstore':{
                                 html: $('form').innerHTML
@@ -209,28 +253,28 @@ function scan(payload,url,index,payloadId) {
                         });
                         location = url;
                     } else
-                    if (payload[3][payloadId][0] == "*"){
-
-                        inputs[index].value = payload[3][payloadId][1];
-                        inputs[index].style.outline = "none";
-                        inputs[index].style.border = "red 2px solid";
-                        inputs[index].style.boxShadow  = "0 0 10px red";
-                        HTMLFormElement.prototype.submit.call(inputs[index].form);
-
-                    } else {
-
-                        if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+                        if (payload[3][payloadId][0] == "*"){
 
                             inputs[index].value = payload[3][payloadId][1];
                             inputs[index].style.outline = "none";
                             inputs[index].style.border = "red 2px solid";
                             inputs[index].style.boxShadow  = "0 0 10px red";
-                            HTMLFormElement.prototype.submit.call(inputs[index].form);     
+                            HTMLFormElement.prototype.submit.call(inputs[index].form);
 
                         } else {
-                            location = url;
+
+                            if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+
+                                inputs[index].value = payload[3][payloadId][1];
+                                inputs[index].style.outline = "none";
+                                inputs[index].style.border = "red 2px solid";
+                                inputs[index].style.boxShadow  = "0 0 10px red";
+                                HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+                            } else {
+                                location = url;
+                            }
                         }
-                    }
                 });
 
                 //console.log(payload[3]);

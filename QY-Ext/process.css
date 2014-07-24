@@ -3,6 +3,7 @@ body {
     font:7px;
     background-color:#f8f8f8;
     outline:none;
+    font-family:futura,verdana,helvetica,futura;
 }
 .separator {
     width: 100%;

@@ -117,7 +117,7 @@ var payload = [
      [["*",""]]
     ],
     ["xsrf", "Test for vulnerability", "xsrf1",
-     [["*",""]],
+     [["z{1000}",""]],
      ["@XSRF,compare","@XSRF,tokencaptcha"]]
 
 ];

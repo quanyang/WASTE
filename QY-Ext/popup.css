@@ -3,6 +3,7 @@ body {
     font:7px;
     background-color:#f8f8f8;
     width:300px;
+        font-family:futura,verdana,helvetica,futura;
     min-width:300px;    
     outline:none;
 }
