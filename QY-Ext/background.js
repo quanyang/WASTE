@@ -1,9 +1,9 @@
 // A generic onclick callback function.
-function genericOnClick(info, tab) {
+//function genericOnClick(info, tab) {
     //    alert("item " + info.menuItemId + " was clicked");
     //    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
     //    alert("tab: " + JSON.stringify(tab));
-}
+//}
 var payload = [
     ["sql1",["","';--"]],
     ["sql2",["' or '1' = '1"]]
@@ -18,6 +18,35 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
     });
 });
 */
+var injectIframeInAllTabs = function(){
+    console.log("reinject content scripts into all tabs");
+    var manifest = chrome.app.getDetails();
+    chrome.windows.getAll({},function(windows){
+      for( var win in windows ){
+        chrome.tabs.getAllInWindow(win.id, function reloadTabs(tabs) {
+          for (var i in tabs) {
+            var scripts = manifest.content_scripts[0].js;
+            console.log("content scripts ", scripts);
+            var k = 0, s = scripts.length;
+            for( ; k < s; k++ ) {
+              chrome.tabs.executeScript(tabs[i].id, {
+                file: scripts[k]
+              });
+            }
+
+          }
+        });
+      }
+    });
+  };
+
+chrome.runtime.onInstalled.addListener(function(details){
+    chrome.storage.sync.set({'scanning':{scanId:0,status:true,url:"",payload:"",payloadId:0,tab:0,index:0}});
+    chrome.storage.sync.set({'result':{id:0}});
+    injectIframeInAllTabs();
+});
+ 
+
 var scanIndex = 0;
 
 chrome.extension.onMessage.addListener(

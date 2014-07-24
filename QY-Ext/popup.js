@@ -22,17 +22,15 @@ $(function() {
                 var scanId;
                 chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
                     scanId = res.scanIndex;
-
                     chrome.storage.sync.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
-                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                            chrome.tabs.sendMessage(tabs[0].id, 
-                                                    {"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]}
-                                                   );
-                        });
+
                     });
 
                 });
 
+                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                    chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
+                });
                 // open scan result page 
                 var index;
                 var exist = false;
@@ -83,6 +81,7 @@ $(function() {
     });
 });
 
+
 //payload[0] = category
 //payload[1] = Name of scan
 //payload[2] = id of scan
@@ -90,6 +89,11 @@ $(function() {
 //  payload[3][i][0] = fields to target ( * = everything )
 //  payload[3][i][1] = payload to inject.
 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] )  
+//sql - regex
+//xss - dom
+//xsrf - token/captcha
+
+
 
 var payload = [ 
     ["sql", "Test for vulnerability", "sql1",
@@ -100,7 +104,8 @@ var payload = [
      [["^.*username.*$","' or '1' = '1"]]
     ],
     ["xss", "Test for vulnerability","xss1",
-     [["*",""]]
+     [["*","<div id='W@$T3'></div>"]],
+     ["@XSS"]
     ],
     ["xss", "Insert Image","xss2",
      [["*",""]]

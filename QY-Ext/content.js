@@ -4,7 +4,14 @@ document.addEventListener('mousedown', function(event){
     last_target = event.target;
 }, true);
 
-
+function escapeHtml(text) {
+  return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+}
 $(document).ready(function(){ 
 
     chrome.extension.sendMessage({ type: 'tabID' }, function(res) {
@@ -31,31 +38,52 @@ function checkIfShouldScan(tabId){
             for(index2=0;index2<obj.scanning.payload[4].length;index2++){
                 //depending on signature, do different stuff
                 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
+                if (obj.scanning.payload[4][index2]=="@XSS"){
+                    if($("#W\\@\\$T3").length){
+                        chrome.runtime.sendMessage(
+                            {
+                                result: [
+                                    obj.scanning.scanId,
+                                    attackUrl,
+                                    obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                    obj.scanning.input,
+                                    escapeHtml(obj.scanning.payload[3][obj.scanning.payloadId][1]),
+                                    "DOM Element exists in webpage",
+                                    "Yes"]
+                            }
+                            , function(response) {
+                                location = attackUrl;
+                            });
+                    } else {
+                        location = attackUrl;
+                    }
+                } else
+                    if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
+                        //send message to process.html to record results
+                        chrome.runtime.sendMessage(
+                            {
+                                result: [
+                                    obj.scanning.scanId,
+                                    attackUrl,
+                                    obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                    obj.scanning.input,
+                                    obj.scanning.payload[3][obj.scanning.payloadId][1],
+                                    obj.scanning.payload[4][index2],
+                                    "Yes"]
+                            }
+                            , function(response) {
+                                location = attackUrl;
+                            });
 
-                if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
-                    //send message to process.html to record results
-                    chrome.runtime.sendMessage(
-                        {
-                            result: [
-                                obj.scanning.scanId,
-                                attackUrl,
-                                obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
-                                obj.scanning.input,
-                                obj.scanning.payload[3][obj.scanning.payloadId][1],
-                                obj.scanning.payload[4][index2],
-                                "Yes"]
-                        }
-                        , function(response) {
-                        });
-
-                }
+                    } else {
+                        location = attackUrl;
+                    }
 
 
             }
 
 
             //revert back to initial page regardless of current page ( Because post will not change the url )
-            location = attackUrl;
 
             //next payload
             if ( location == attackUrl ) {
@@ -84,20 +112,40 @@ function scan(payload,url,index,payloadId) {
 
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
+    chrome.storage.sync.get("scanning", function(obj){
+
+        if(payloadId>=payload[3].length){
+
+            chrome.runtime.sendMessage(
+                {
+                    result: [
+                        obj.scanning.scanId,
+                        url,
+                        obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                        "",
+                        "",
+                        "",
+                        "Fail",
+                        "done"
+                    ]
+                }
+                , function(response) {
+                });
+            //done
+            alert("scan is completed");
+            chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
 
 
-    if(payloadId>=payload[3].length){
 
-        //done
-        chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
-        alert("Scan Done!");
-    }  else {
 
-        //scan not done
-        if( index < inputs.length ){
-            //Payload versatility
 
-            chrome.storage.sync.get("scanning", function(obj){
+        }  else {
+
+            //scan not done
+            if( index < inputs.length ){
+                //Payload versatility
+
+
 
                 chrome.storage.sync.set({
                     'scanning':{
@@ -135,32 +183,34 @@ function scan(payload,url,index,payloadId) {
                     }
                 });
 
-            });
-            //console.log(payload[3]);
-            //compare name of input with payload[3][1];
+                //console.log(payload[3]);
+                //compare name of input with payload[3][1];
 
-        } else {
-            //else payloadId++
-            chrome.storage.sync.get("scanning", function(obj){
-                chrome.storage.sync.set({
-                    'scanning':{
-                        input:obj.scanning.input,
-                        scanId:obj.scanning.scanId,
-                        status:true,
-                        url:obj.scanning.url,
-                        payload:obj.scanning.payload,
-                        payloadId:obj.scanning.payloadId+1,
-                        tab:obj.scanning.tab,
-                        index:0
-                    }
+            } else {
+                //else payloadId++
+                chrome.storage.sync.get("scanning", function(obj){
+                    chrome.storage.sync.set({
+                        'scanning':{
+                            input:obj.scanning.input,
+                            scanId:obj.scanning.scanId,
+                            status:true,
+                            url:obj.scanning.url,
+                            payload:obj.scanning.payload,
+                            payloadId:obj.scanning.payloadId+1,
+                            tab:obj.scanning.tab,
+                            index:0
+                        }
+                    });
                 });
-            });
+            }
         }
-
-    }
-
+    });
 
 }
+
+
+
+
 
 
 

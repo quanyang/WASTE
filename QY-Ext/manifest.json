@@ -17,7 +17,9 @@
         "contextMenus",
         "tabs",
         "contentSettings",
-        "webNavigation"
+        "webNavigation",
+        "*://*/*",
+        "https://*/*"
     ],
     "browser_action": {
         "default_title": "Enter WASTE",
