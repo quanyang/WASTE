@@ -2,15 +2,20 @@
 $(document).ready(function(){ 
     chrome.storage.local.get("resultStorage", function(res){
         if( res.resultStorage.html.length >0){
-            $(".result").html(res.resultStorage.html); 
+            chrome.extension.sendMessage({ type: 'scanIndexc' }, function(res2) {
+                console.log(res2.scanIndex);
+                if(!$('.'+res2.scanIndex).length&&res2.scanIndex!=0){
+                    $(".result").html(res.resultStorage.html); 
+                }
+            });
         }
 
     });
-    
-$( ".clear" ).click(function() {
-    chrome.storage.local.remove("resultStorage");
-    location = "";
-});
+
+    $( ".clear" ).click(function() {
+        chrome.storage.local.remove("resultStorage");
+        location = "";
+    });
 });
 
 chrome.runtime.onMessage.addListener(
@@ -18,7 +23,7 @@ chrome.runtime.onMessage.addListener(
 
 
         if (request.result){
-
+            console.log(request.result[0])
             if(request.result[7]==="done"){
                 if(!$('.'+request.result[0]).length){
                     $('.result').children().children()

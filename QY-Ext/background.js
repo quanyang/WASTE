@@ -1,8 +1,8 @@
 // A generic onclick callback function.
 //function genericOnClick(info, tab) {
-    //    alert("item " + info.menuItemId + " was clicked");
-    //    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
-    //    alert("tab: " + JSON.stringify(tab));
+//    alert("item " + info.menuItemId + " was clicked");
+//    alert("info: " + JSON.stringify(info));info: {"editable":true,"menuItemId":551,"pageUrl":"http://hugh.comp.nus.edu.sg/cs2107/demo1/grades.php?matric=a0111889w&method=1","parentMenuItemId":548}
+//    alert("tab: " + JSON.stringify(tab));
 //}
 var payload = [
     ["sql1",["","';--"]],
@@ -23,7 +23,7 @@ chrome.runtime.onInstalled.addListener(function(details){
     chrome.storage.local.set({'scanning':{scanId:0,status:true,url:"",payload:"",payloadId:0,tab:0,index:0}});
     chrome.storage.local.set({'result':{id:0}});
 });
- 
+
 
 var scanIndex = 0;
 
@@ -36,6 +36,10 @@ chrome.extension.onMessage.addListener(
         if (message.type == 'scanIndex'){
             sendResponse({scanIndex: scanIndex});
             scanIndex++;
+        }
+        if (message.type == 'scanIndexc'){
+            sendResponse({scanIndex: scanIndex});
+
         }
     }
 );

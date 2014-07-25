@@ -18,13 +18,28 @@ $(function() {
                 chrome.storage.local.set({'result':{id:tab.id}});
             });
         }
-        
+
+    });
+    $( "input[type=button]")
+    .button()
+    .click(function( event ) {
+        event.preventDefault();
     });
 
     $( "input[type=submit]")
     .button()
     .click(function( event ) {
         event.preventDefault();
+    });
+    $( ".stop" ).click(function() {
+        chrome.storage.local.get("scanning", function(obj){
+            chrome.tabs.duplicate(obj.scanning.tab);
+            chrome.tabs.remove(obj.scanning.tab);
+        });
+
+        chrome.storage.local.remove('xsrfstore');
+        chrome.storage.local.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+
     });
 
     $( ".submit1" ).click(function() {
@@ -38,19 +53,6 @@ $(function() {
                 var attackTab = tabs[0].id;
                 //send message to content tab to begin attack based on payload
                 //start attack
-
-                var scanId;
-                chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
-                    scanId = res.scanIndex;
-                    chrome.storage.local.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
-
-                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                            chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
-                        });
-                    });
-
-                });
-
                 // open scan result page 
                 var index;
                 var exist = false;
@@ -65,6 +67,16 @@ $(function() {
                         chrome.storage.local.set({'result':{id:tab.id}});
                     });
                 }
+                var scanId;
+                chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
+                    scanId = res.scanIndex;
+                    chrome.storage.local.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
+                        chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
+
+                    });
+
+                });
+
             });
         }
     });

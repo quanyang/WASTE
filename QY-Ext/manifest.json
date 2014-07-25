@@ -27,7 +27,8 @@
             "19": "images/icon19.png",
             "38": "images/icon38.png"
         },
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
+        "default_title": "WASTE - click for details"
     },
     "content_scripts": [
         {

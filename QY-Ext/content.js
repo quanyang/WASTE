@@ -137,6 +137,7 @@ function checkIfShouldScan(tabId){
                     //END OF XSRF
                 } else if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
                     // MUST BE REGEX BASED SIGNATURE
+                    console.log(index2);
                     //send message to process.html to record results
                     chrome.runtime.sendMessage(
                         {
@@ -166,22 +167,21 @@ function checkIfShouldScan(tabId){
             if( obj.scanning.index!=0&& obj.scanning.payload[0]=="xsrf"){
                 scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payload[4].length+2);
                 //next payload
-            }else
-                if (location == attackUrl ) {
-                    chrome.storage.local.set({
-                        'scanning':{
-                            input:obj.scanning.input,
-                            scanId:obj.scanning.scanId,
-                            status:true,
-                            url:attackUrl,
-                            payload:obj.scanning.payload,
-                            payloadId:obj.scanning.payloadId,
-                            tab:obj.scanning.tab,
-                            index:obj.scanning.index+1
-                        }
-                    });
-                    scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payloadId);
-                }
+            } else if (location == attackUrl ) {
+                chrome.storage.local.set({
+                    'scanning':{
+                        input:obj.scanning.input,
+                        scanId:obj.scanning.scanId,
+                        status:true,
+                        url:attackUrl,
+                        payload:obj.scanning.payload,
+                        payloadId:obj.scanning.payloadId,
+                        tab:obj.scanning.tab,
+                        index:obj.scanning.index+1
+                    }
+                });
+                scan(obj.scanning.payload,attackUrl,obj.scanning.index,obj.scanning.payloadId);
+            }
         }
     });
 }
@@ -226,9 +226,6 @@ function scan(payload,url,index,payloadId) {
             //scan not done
             if( index < inputs.length ){
                 //Payload versatility
-
-
-
                 chrome.storage.local.set({
                     'scanning':{
                         input:inputs[index].name,
@@ -240,39 +237,37 @@ function scan(payload,url,index,payloadId) {
                         tab:obj.scanning.tab,
                         index:obj.scanning.index
                     }
-                },function() {
-                    if (payload[0]=="xsrf"&&index<1){
-                        chrome.storage.local.set({
-                            'xsrfstore':{
-                                html: $('form').innerHTML
-                            }
-                        });
-                        location = url;
-                    } else
-                        if (payload[3][payloadId][0] == "*"){
+                });
+                if (payload[0]=="xsrf"&&index<1){
+                    chrome.storage.local.set({
+                        'xsrfstore':{
+                            html: $('form').innerHTML
+                        }
+                    });
+                    location = url;
+                } else
+                    if (payload[3][payloadId][0] == "*"){
+                        console.log(inputs[index].name);
+                        inputs[index].value = payload[3][payloadId][1];
+                        inputs[index].style.outline = "none";
+                        inputs[index].style.border = "red 2px solid";
+                        inputs[index].style.boxShadow  = "0 0 10px red";
+                        HTMLFormElement.prototype.submit.call(inputs[index].form);
+
+                    } else {
+
+                        if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
 
                             inputs[index].value = payload[3][payloadId][1];
                             inputs[index].style.outline = "none";
                             inputs[index].style.border = "red 2px solid";
                             inputs[index].style.boxShadow  = "0 0 10px red";
-                            HTMLFormElement.prototype.submit.call(inputs[index].form);
+                            HTMLFormElement.prototype.submit.call(inputs[index].form);     
 
                         } else {
-
-                            if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
-
-                                inputs[index].value = payload[3][payloadId][1];
-                                inputs[index].style.outline = "none";
-                                inputs[index].style.border = "red 2px solid";
-                                inputs[index].style.boxShadow  = "0 0 10px red";
-                                HTMLFormElement.prototype.submit.call(inputs[index].form);     
-
-                            } else {
-                                location = url;
-                            }
+                            location = url;
                         }
-                });
-
+                    }
                 //console.log(payload[3]);
                 //compare name of input with payload[3][1];
 
@@ -308,6 +303,7 @@ chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         //  console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
         if ( request.type == "start" ) {
+
             scan(request.payload,request.url,0,0);
         }
 
