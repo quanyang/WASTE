@@ -1,6 +1,5 @@
 $(function() {
     $( "#tabs" ).tabs();
-    $("#body").width+=1;
     $(".result").click(function(event){
         $(".default").click();
         var index;

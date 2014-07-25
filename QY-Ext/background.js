@@ -18,6 +18,10 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
     });
 });
 */
+var settings = {
+    "email":"abc@abc.com",
+    "username":"anon"
+}
 
 chrome.runtime.onInstalled.addListener(function(details){
     chrome.storage.local.set({'scanning':{scanId:0,status:true,url:"",payload:"",payloadId:0,tab:0,index:0}});
@@ -30,6 +34,11 @@ chrome.runtime.onInstalled.addListener(function(details){
     chrome.storage.local.set({
         'resultStorage':{
             html:"",
+        }
+    });
+    chrome.storage.local.set({
+        'autofill':{
+            settings:JSON.stringify(settings);,
         }
     });
 

@@ -1,24 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head><title>WASTE Settings</title></head>
-<body>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="options.css">
+        <script src="external/jquery/jquery.js"></script>
+        <script src="jquery-ui.js"></script>
+        <link href="jquery-ui.css" rel="stylesheet">
+        <script src="options.js"></script>
+        <title>WASTE - Settings</title>
+    </head>
 
-Favorite color:
-<select id="color">
- <option value="red">red</option>
- <option value="green">green</option>
- <option value="blue">blue</option>
- <option value="yellow">yellow</option>
-</select>
+    <body>
 
-<label>
-  <input type="checkbox" id="like">
-  I like colors.
-</label>
+        <div class="top"><img style="left:20px;position:absolute;display:block;" src="images/icon128.png" height="50px"/> <h1 style="text-align:center;line-height:55px;color:white;    ">Settings</h1></div>
+        <div align="center" class="content">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tabs-1" class="default">General Settings</a></li>
+                    <li><a href="#tabs-2">Auto-fill Settings</a></li>
+                </ul>
+                <div id="tabs-1">
+                    <p>
 
-<div id="status"></div>
-<button id="save">Save</button>
+                    </p>
+                </div>
+                <div id="tabs-2">
 
-<script src="options.js"></script>
-</body>
+                    <table class="autofill" cellpadding="5px" cellspacing="0px"> 
+                        <tr>
+                            <th>Field</th><th>Data</th><th>Clear?</th>
+                        </tr> 
+                    </table>
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </body>
 </html>

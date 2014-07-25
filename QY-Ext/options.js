@@ -1,3 +1,13 @@
+$(function() {
+    $( "#tabs" ).tabs(); 
+    
+    chrome.storage.local.get("autofill",function(obj){
+        
+    });
+});
+
+
+
 // Saves options to chrome.storage
 function save_options() {
   var color = document.getElementById('color').value;
