@@ -22,20 +22,24 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
 chrome.runtime.onInstalled.addListener(function(details){
     chrome.storage.local.set({'scanning':{scanId:0,status:true,url:"",payload:"",payloadId:0,tab:0,index:0}});
     chrome.storage.local.set({'result':{id:0}});
+    chrome.storage.local.set({
+        'scanIndex':{
+            scanIndex:0,
+        }
+    });
+    chrome.storage.local.set({
+        'resultStorage':{
+            html:"",
+        }
+    });
+
 });
-
-
-var scanIndex = 0;
 
 chrome.extension.onMessage.addListener(
     function(message, sender, sendResponse) {
         if ( message.type == 'tabID' )
         {
             sendResponse({ tabID: sender.tab.id });
-        }
-        if (message.type == 'scanIndex'){
-            sendResponse({scanIndex: scanIndex});
-            scanIndex++;
         }
         if (message.type == 'scanIndexc'){
             sendResponse({scanIndex: scanIndex});

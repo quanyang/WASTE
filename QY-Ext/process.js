@@ -1,13 +1,11 @@
 
 $(document).ready(function(){ 
     chrome.storage.local.get("resultStorage", function(res){
-        if( res.resultStorage.html.length >0){
-            chrome.extension.sendMessage({ type: 'scanIndexc' }, function(res2) {
-                console.log(res2.scanIndex);
-                if(!$('.'+res2.scanIndex).length&&res2.scanIndex!=0){
-                    $(".result").html(res.resultStorage.html); 
-                }
-            });
+        if(res.resultStorage &&  res.resultStorage.html.length >0){
+
+            $(".result").html(res.resultStorage.html); 
+
+
         }
 
     });
@@ -15,6 +13,12 @@ $(document).ready(function(){
     $( ".clear" ).click(function() {
         chrome.storage.local.remove("resultStorage");
         location = "";
+
+        chrome.storage.local.set({
+            'scanIndex':{
+                scanIndex:0,
+            }
+        });
     });
 });
 
@@ -28,7 +32,7 @@ chrome.runtime.onMessage.addListener(
                 if(!$('.'+request.result[0]).length){
                     $('.result').children().children()
                     .end().append(
-                        "<tr class='"+request.result[0]+"'><td>"+(no++)+"</td><td>"+request.result[1]+"</td><td>"+request.result[2]+"<td>"+"<td>"+request.result[6]+"</td></tr>"
+                        "<tr class='"+request.result[0]+"'><td>"+(request.result[0]+1)+"</td><td>"+request.result[1]+"</td><td>"+request.result[2]+"<td>"+"<td>"+request.result[6]+"</td></tr>"
                     );
                 }
             } else {
@@ -39,7 +43,7 @@ chrome.runtime.onMessage.addListener(
                 } else {
                     $('.result').children().children()
                     .end().append(
-                        "<tr class='"+request.result[0]+"'><td>"+(no++)+"</td><td>"+request.result[1]+"</td><td>"+request.result[2]+"<td>"
+                        "<tr class='"+request.result[0]+"'><td>"+(request.result[0]+1)+"</td><td>"+request.result[1]+"</td><td>"+request.result[2]+"<td>"
                         +"<table cellspacing='0' cellpadding='4px' class='payload'><tr><th>Input Field</th><th>Payload</th><th>Signature</th></tr>"
                         +"<tr><td>"+ request.result[3] +"</td><td>"+request.result[4]+"</td><td>"+request.result[5]+"</td></tr>"
                         +"</table>"+
@@ -60,4 +64,3 @@ chrome.runtime.onMessage.addListener(
         }
 
     });
-var no = 1;

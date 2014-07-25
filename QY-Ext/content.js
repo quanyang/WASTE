@@ -190,6 +190,8 @@ function checkIfShouldScan(tabId){
 function scan(payload,url,index,payloadId) {
     //$("input:not([type='submit']),textarea,option") except for submit
     //textarea, select(one time suffice) $('select option:selected')
+
+
     console.log(payload+" "+url+" "+index+" "+payloadId);
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
@@ -305,6 +307,7 @@ chrome.runtime.onMessage.addListener(
         if ( request.type == "start" ) {
 
             scan(request.payload,request.url,0,0);
+            sendResponse({farewell: "goodbye"});
         }
 
         //if (request.greeting == "hello") sendResponse({farewell: "goodbye"});

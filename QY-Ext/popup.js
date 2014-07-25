@@ -54,26 +54,44 @@ $(function() {
                 //send message to content tab to begin attack based on payload
                 //start attack
                 // open scan result page 
-                var index;
-                var exist = false;
-                for(index = 0; index< chrome.extension.getViews().length;index++){
-                    if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
-                        exist=true; 
-                    } 
-                }
-                if(!exist){
-                    chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
-                        // Tab opened.
-                        chrome.storage.local.set({'result':{id:tab.id}});
-                    });
-                }
-                var scanId;
-                chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
-                    scanId = res.scanIndex;
-                    chrome.storage.local.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
-                        chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
 
+
+
+                chrome.storage.local.get("scanIndex", function(res){
+                    var scanId=res.scanIndex.scanIndex;
+                    res.scanIndex.scanIndex++;
+                    chrome.storage.local.set({
+                        'scanIndex':{
+                            scanIndex: res.scanIndex.scanIndex,
+                        }
                     });
+                    
+                    chrome.storage.local.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},
+                                             function(){
+                                                 chrome.tabs.sendMessage(
+                                                     tabs[0].id,
+                                                     {"type":"start",
+                                                      "url":tabs[0].url,
+                                                      "payload":payload[$(".payload1 option:selected").val()]
+                                                     },function(response){
+                                                         var index;
+                                                         var exist = false;
+                                                         for(index = 0; index< chrome.extension.getViews().length;index++){
+                                                             if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+                                                                 exist=true; 
+                                                             } 
+                                                         }
+                                                         if(!exist){
+                                                             chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                                                                 // Tab opened.
+                                                                 chrome.storage.local.set({'result':{id:tab.id}});
+                                                             });
+                                                         }
+                                                     }
+                                                 );
+
+                                             });
+
 
                 });
 
