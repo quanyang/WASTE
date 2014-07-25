@@ -1,6 +1,26 @@
 $(function() {
     $( "#tabs" ).tabs();
     $("#body").width+=1;
+    $(".result").click(function(event){
+        $(".default").click();
+        var index;
+        var exist = false;
+        for(index = 0; index< chrome.extension.getViews().length;index++){
+            if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+                chrome.extension.getViews()[index].chrome.tabs.getCurrent(function(tab){chrome.tabs.update(tab.id, {"selected": true})});
+                exist=true; 
+                break;
+            } 
+        }
+        if(!exist){
+            chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                // Tab opened.
+                chrome.storage.local.set({'result':{id:tab.id}});
+            });
+        }
+        
+    });
+
     $( "input[type=submit]")
     .button()
     .click(function( event ) {

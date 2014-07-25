@@ -50,28 +50,24 @@ function checkIfShouldScan(tabId){
                             var x=2;
                             var vuln=true;
                             for(;x<toScan.length;x++){
-                                if(!$("#"+toScan[1]).attr(toScan[x])){
-                                    vuln=false;
+                                if($("#"+toScan[1]).attr(toScan[x])){
+                                    chrome.runtime.sendMessage(
+                                        {
+                                            result: [
+                                                obj.scanning.scanId,
+                                                attackUrl,
+                                                obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
+                                                obj.scanning.input,
+                                                escapeHtml(obj.scanning.payload[3][obj.scanning.payloadId][1]),
+                                                "ID: "+toScan[1]+" and "+toScan[x]+" attributes detected",
+                                                "Yes"]
+                                        }
+                                        , function(response) {
+                                        });
                                 }
                             }
-                            if(vuln){
-                                chrome.runtime.sendMessage(
-                                    {
-                                        result: [
-                                            obj.scanning.scanId,
-                                            attackUrl,
-                                            obj.scanning.payload[0].toUpperCase()+"-"+obj.scanning.payload[1],
-                                            obj.scanning.input,
-                                            escapeHtml(obj.scanning.payload[3][obj.scanning.payloadId][1]),
-                                            "ID: "+toScan[1]+" and "+toScan.splice(2,2)+" attributes detected",
-                                            "Yes"]
-                                    }
-                                    , function(response) {
-                                        location = attackUrl;
-                                    });
-                            } else {
-                                location = attackUrl;
-                            }
+                            location = attackUrl;
+
                         }
 
                     }else {
