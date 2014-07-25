@@ -22,15 +22,15 @@ $(function() {
                 var scanId;
                 chrome.extension.sendMessage({ type: 'scanIndex' }, function(res) {
                     scanId = res.scanIndex;
-                    chrome.storage.sync.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
+                    chrome.storage.local.set({'scanning':{scanId:scanId,status:true,url:tabs[0].url,payload:payload[ $(".payload1 option:selected").val()],payloadId:0,tab:tabs[0].id,index:1}},function(){
 
+                        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                            chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
+                        });
                     });
 
                 });
 
-                chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id,{"type":"start","url":tabs[0].url,"payload":payload[ $(".payload1 option:selected").val() ]});
-                });
                 // open scan result page 
                 var index;
                 var exist = false;
@@ -42,7 +42,7 @@ $(function() {
                 if(!exist){
                     chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
                         // Tab opened.
-                        chrome.storage.sync.set({'result':{id:tab.id}});
+                        chrome.storage.local.set({'result':{id:tab.id}});
                     });
                 }
             });

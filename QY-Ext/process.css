@@ -1,5 +1,6 @@
 body {
-    margin:3px;
+    margin:0px;
+    padding:0px;
     font:7px;
     background-color:#f8f8f8;
     outline:none;
@@ -14,14 +15,36 @@ input,a,li {
     outline:none;
 }
 
-.result td,.result th { 
+ td,  th { 
+    border-radius:0px;
     border:1px solid black;
     border-bottom:0px;
     border-right:0px;
 }
-.result td:last-child,.result th:last-child {
+ td:last-child, th:last-child {
     border-right:1px solid black;
+    
 }
-.result tr:last-child td,.result tr:last-child th{
+ tr:last-child>td, tr:last-child>th{
     border-bottom:1px solid black;
+}
+.content {
+    padding:20px;
+}
+.top{
+    margin:0px;
+    background:#058;
+    padding:6px;
+    text-align: center;
+    height:50px;
+}
+h1{
+    text-shadow:2px 2px 0px black;
+    display:inline;
+    margin:0px;
+    font-size:30px;
+}
+a:active, a:hover,a:focus ,a{
+    text-decoration:none;
+    color:white;  
 }

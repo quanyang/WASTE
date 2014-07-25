@@ -24,7 +24,7 @@ $(document).ready(function(){
 
 function checkIfShouldScan(tabId){
 
-    chrome.storage.sync.get("scanning", function(obj){
+    chrome.storage.local.get("scanning", function(obj){
         var scanStatus = obj.scanning.status;
         var attackUrl = obj.scanning.url;
         //make sure the scan is on correct tab
@@ -85,7 +85,7 @@ function checkIfShouldScan(tabId){
                 } else if (obj.scanning.payload[4][index2].match(/^@XSRF,/)&&obj.scanning.index<2&&obj.scanning.status) {
                     //START OF XSRF
                     if (obj.scanning.payload[4][index2].match(/^@XSRF,compare/)) {
-                        chrome.storage.sync.get("xsrfstore", function(objz){
+                        chrome.storage.local.get("xsrfstore", function(objz){
                             if(objz.xsrfstore.html!=$('form').innerHTML){
 
                                 chrome.runtime.sendMessage(
@@ -105,7 +105,7 @@ function checkIfShouldScan(tabId){
                             } 
                         });
 
-                        chrome.storage.sync.remove('xsrfstore');
+                        chrome.storage.local.remove('xsrfstore');
                     } else if (obj.scanning.payload[4][index2].match(/^@XSRF,tokencaptcha/)){
 
                         inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
@@ -172,7 +172,7 @@ function checkIfShouldScan(tabId){
                 //next payload
             }else
                 if (location == attackUrl ) {
-                    chrome.storage.sync.set({
+                    chrome.storage.local.set({
                         'scanning':{
                             input:obj.scanning.input,
                             scanId:obj.scanning.scanId,
@@ -197,12 +197,12 @@ function scan(payload,url,index,payloadId) {
     console.log(payload+" "+url+" "+index+" "+payloadId);
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
-    chrome.storage.sync.get("scanning", function(obj){
+    chrome.storage.local.get("scanning", function(obj){
 
         if(!obj.scanning.status||payloadId>=payload[3].length){
             alert("scan is completed");
-            chrome.storage.sync.remove('xsrfstore');
-            chrome.storage.sync.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
+            chrome.storage.local.remove('xsrfstore');
+            chrome.storage.local.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
             chrome.runtime.sendMessage(
                 {
                     result: [
@@ -233,7 +233,7 @@ function scan(payload,url,index,payloadId) {
 
 
 
-                chrome.storage.sync.set({
+                chrome.storage.local.set({
                     'scanning':{
                         input:inputs[index].name,
                         scanId:obj.scanning.scanId,
@@ -246,7 +246,7 @@ function scan(payload,url,index,payloadId) {
                     }
                 },function() {
                     if (payload[0]=="xsrf"&&index<1){
-                        chrome.storage.sync.set({
+                        chrome.storage.local.set({
                             'xsrfstore':{
                                 html: $('form').innerHTML
                             }
@@ -282,7 +282,7 @@ function scan(payload,url,index,payloadId) {
 
             } else {
                 //else payloadId++
-                chrome.storage.sync.set({
+                chrome.storage.local.set({
                     'scanning':{
                         input:obj.scanning.input,
                         scanId:obj.scanning.scanId,
