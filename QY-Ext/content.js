@@ -228,6 +228,15 @@ function scan(payload,url,index,payloadId) {
             //scan not done
             if( index < inputs.length ){
                 //Payload versatility
+                chrome.storage.local.get("autofill",function(obj){
+                    var setting = JSON.parse(obj.autofill.settings);
+                    $.each(setting,function(key,value){
+                        $('input').filter(function() {
+                            return (new RegExp(key,"i")).test($(this).attr('name'));
+                        }).val(value);
+                    });
+                });
+
                 chrome.storage.local.set({
                     'scanning':{
                         input:inputs[index].name,
@@ -249,7 +258,6 @@ function scan(payload,url,index,payloadId) {
                     location = url;
                 } else
                     if (payload[3][payloadId][0] == "*"){
-                        console.log(inputs[index].name);
                         inputs[index].value = payload[3][payloadId][1];
                         inputs[index].style.outline = "none";
                         inputs[index].style.border = "red 2px solid";

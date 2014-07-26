@@ -20,7 +20,8 @@ chrome.contextMenus.onClicked.addListener(function sqlOnClick(info,tab) {
 */
 var settings = {
     "email":"abc@abc.com",
-    "username":"anon"
+    "user":"anon",
+    "matric":"a1231123"
 }
 
 chrome.runtime.onInstalled.addListener(function(details){
@@ -38,7 +39,7 @@ chrome.runtime.onInstalled.addListener(function(details){
     });
     chrome.storage.local.set({
         'autofill':{
-            settings:JSON.stringify(settings);,
+            settings:JSON.stringify(settings)
         }
     });
 
