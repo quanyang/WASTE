@@ -14,7 +14,7 @@
         <div id="tabs">
             <ul>
                 <li><a href="#tabs-1" class="default">Auto Scan</a></li>
-                <li><a href="#tabs-2">Manual Scan</a></li>
+                <li><a href="#tabs-2" class="manual">Manual Scan</a></li>
                 <li><a href="#tabs-3" class="result">Results</a></li>
             </ul>
             <div id="tabs-1">
@@ -35,7 +35,7 @@
                         </select>
                     </label><br>
                     <input type="submit" class="submit1" value="Scan">
-                     <input type="button" class="stop" value="Stop scan">
+                    <input type="button" class="stop" value="Stop scan">
                 </p>
             </div>
             <div id="tabs-2">
@@ -52,21 +52,22 @@
                             <option></option>
                             <option value="sql">SQL Injection</option>
                             <option value="xss">XSS</option>
-                            <option value="xsrf">XSRF</option>
                         </select>
                     </label><br/>
-                    <label>
+                    <label class="payloadLabel2" style="display:none;">
                         Payload:
                         <select class="payload2" name="payload">
                             <option></option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </label><br>
-                    <label>
-                        Custom Payload:
+                        </select><br>
+
+                        Payload:
                         <input class="customPayload2" type="text" name="customPayload">
+                        <br/>
                     </label>
-                    <input type="submit" class="submit2" value="Attack">
+                    <br/>
+
+                    <input type="submit" class="submit2" value="Scan">
+                    <input type="button" class="stop" value="Stop scan">
                 </p>
             </div>
         </div>

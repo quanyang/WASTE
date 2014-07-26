@@ -185,6 +185,18 @@ function checkIfShouldScan(tabId){
         }
     });
 }
+function scan2(payload,url,index,payloadId) {
+    inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
+    if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+
+        inputs[index].value = payload[3][payloadId][1];
+        inputs[index].style.outline = "none";
+        inputs[index].style.border = "red 2px solid";
+        inputs[index].style.boxShadow  = "0 0 10px red";
+        HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+    } 
+}
 
 
 function scan(payload,url,index,payloadId) {
@@ -312,10 +324,23 @@ function scan(payload,url,index,payloadId) {
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         //  console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
+        if ( request.type == "start2" ) {
+
+            scan2(request.payload,request.url,0,0);
+            sendResponse({farewell: "goodbye"});
+        }
         if ( request.type == "start" ) {
 
             scan(request.payload,request.url,0,0);
             sendResponse({farewell: "goodbye"});
+        }
+        if(request.type =="getInput"){
+            var input  =$("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
+            var output = {};
+            $.each(input,function(ind,obj){
+                output[ind] = obj.name;
+            });
+            sendResponse({input: JSON.stringify(output)});
         }
 
         //if (request.greeting == "hello") sendResponse({farewell: "goodbye"});

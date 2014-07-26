@@ -1,6 +1,6 @@
 $(document).ready(function(){ 
     $( "#tabs" ).tabs(); 
-
+    $("input[type='button']").button();
 
     chrome.storage.local.get("autofill",function(obj){
         var setting = JSON.parse(obj.autofill.settings);
@@ -51,6 +51,7 @@ function set(key,value){
     $('.autofill').children().children().end()
     .append("<tr><td>"+key+"</td><td><input type='text' name='value' class='value' id='"+key+"' value='"+value+"'></td><td><input type='button' href='#' class='remove' id='"+key+"' value='Delete'>");
 
+    $("input[type='button']").button();
 
 }
 
