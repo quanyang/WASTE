@@ -27,7 +27,7 @@ $(function() {
                 {"type":"getInput"
                 },function(response){
                     var inputs = JSON.parse(response.input);
-                    console.log(inputs);
+                    $( ".target2" ).children().remove();
                     $.each(inputs,function(ind,name){
                         $( ".target2" ).children().end().append('<option value="'+name+'">'+name+'</option>');
                     });
@@ -172,7 +172,6 @@ $(function() {
 
 
     $( ".payload2" ).change(function() {
-        console.log(this.value);
         $(".customPayload2").val(payload2[this.value][3][0][1]);
     });
 

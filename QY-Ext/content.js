@@ -12,6 +12,7 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
+
 $(document).ready(function(){ 
 
     chrome.extension.sendMessage({ type: 'tabID' }, function(res) {
@@ -137,7 +138,7 @@ function checkIfShouldScan(tabId){
                     //END OF XSRF
                 } else if (document.documentElement.outerHTML.match(new RegExp(obj.scanning.payload[4][index2],"i"))){
                     // MUST BE REGEX BASED SIGNATURE
-                    console.log(index2);
+
                     //send message to process.html to record results
                     chrome.runtime.sendMessage(
                         {

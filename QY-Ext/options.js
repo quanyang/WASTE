@@ -4,7 +4,6 @@ $(document).ready(function(){
 
     chrome.storage.local.get("autofill",function(obj){
         var setting = JSON.parse(obj.autofill.settings);
-        console.log(setting);
         $.each(setting,function(key,value){
             set(key,value);
         });
@@ -37,7 +36,7 @@ $(document).on("input",".value",function(event) {
 $(document).on("click",".remove",function(event) {
 
     delete settingsz[event.currentTarget.id];
-    console.log($("#"+event.currentTarget.id).parent().parent().remove());
+    $("#"+event.currentTarget.id).parent().parent().remove();
     chrome.storage.local.set({
         'autofill':{
             settings:JSON.stringify(settingsz)
