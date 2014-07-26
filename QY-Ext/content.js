@@ -203,9 +203,10 @@ function scan2(payload,url,index,payloadId) {
 function scan(payload,url,index,payloadId) {
     //$("input:not([type='submit']),textarea,option") except for submit
     //textarea, select(one time suffice) $('select option:selected')
+    chrome.extension.sendMessage({ type: 'openResult' }, function(res) {
+    });
 
-
-    console.log(payload+" "+url+" "+index+" "+payloadId);
+    //console.log(payload+" "+url+" "+index+" "+payloadId);
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
     chrome.storage.local.get("scanning", function(obj){
