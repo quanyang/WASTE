@@ -330,7 +330,7 @@ function scan(payload,url,index,payloadId) {
 
 
 
-
+var last;
 //onmessage for start of attack
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -352,6 +352,14 @@ chrome.runtime.onMessage.addListener(
                 output[ind] = obj.name;
             });
             sendResponse({input: JSON.stringify(output)});
+        }
+        if( request.type=="highlight"){
+            if( last )
+            last.css("outline","none").css("border","").css("boxShadow","");
+            last = $(":input[name='"+request.name+"']");
+            $(":input[name='"+request.name+"']").css("outline","none");
+            $(":input[name='"+request.name+"']").css("border" , "#09f 1px solid");
+            $(":input[name='"+request.name+"']").css("boxShadow"  ,"0 0 10px #09f");
         }
 
         //if (request.greeting == "hello") sendResponse({farewell: "goodbye"});

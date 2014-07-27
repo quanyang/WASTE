@@ -19,6 +19,19 @@ $(function() {
         }
 
     });
+    $(".target2").change(function(event){
+        chrome.tabs.query({'active': true}, function(tabs) {
+            var attackTab = tabs[0].id;
+            chrome.tabs.sendMessage(
+                tabs[0].id,
+                {"type":"highlight","name":$(".target2 option:selected").val()
+                },function(response){
+
+                }   
+            );
+        });
+    });
+
     $(".manual").click(function(event){
         chrome.tabs.query({'active': true}, function(tabs) {
             var attackTab = tabs[0].id;
@@ -30,6 +43,16 @@ $(function() {
                     $( ".target2" ).children().remove();
                     $.each(inputs,function(ind,name){
                         $( ".target2" ).children().end().append('<option value="'+name+'">'+name+'</option>');
+                    });
+                    chrome.tabs.query({'active': true}, function(tabs) {
+                        var attackTab = tabs[0].id;
+                        chrome.tabs.sendMessage(
+                            tabs[0].id,
+                            {"type":"highlight","name":$(".target2 option:selected").val()
+                            },function(response){
+
+                            }   
+                        );
                     });
                 }   
             );
