@@ -189,6 +189,15 @@ function checkIfShouldScan(tabId){
 function scan2(payload,url,index,payloadId) {
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
     if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+        chrome.storage.local.get("autofill",function(obj){
+            var setting = JSON.parse(obj.autofill.settings);
+            $.each(setting,function(key,value){
+                $('input').filter(function() {
+                    return (new RegExp(key,"i")).test($(this).attr('name'));
+                }).val(value);
+            });
+        });
+
 
         inputs[index].value = payload[3][payloadId][1];
         inputs[index].style.outline = "none";
