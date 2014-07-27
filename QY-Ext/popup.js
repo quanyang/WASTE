@@ -261,13 +261,17 @@ $(function() {
 var payload2 = [ 
     ["sql", "Test for vulnerability", "sql1",
      [["*","';--"]],
-     ["An error occured: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to"
+     ["An error occured: You have an error"
+     ,"check the manual that corresponds to your MySQL server version"
      ,"You have an error in your SQL syntax;"
      ,"You have an error in your SQL syntax near"
      ,"MySQL server version for the right syntax to use"
-     ,"Unknown MySQL error","An error occured: "
+     ,"Unknown MySQL error"
+     ,"An error occured: DROP command"
+     ,"An error occured: No database"
      ,"valid MySQL result"
-     ,"on MySQL result index","Column count doesn't match value count at row"
+     ,"on MySQL result index"
+     ,"Column count doesn't match value count at row"
      ,"Column count doesn't match"
      ,"supplied argument is not a valid MySQL"
      ,"Warning.*mysql_.*"]
@@ -310,11 +314,14 @@ var payload2 = [
 var payload = [ 
     ["sql", "Test for vulnerability", "sql1",
      [["*","';--"],["*","'--"],["*","1'1"], ["*", "1\'"], ["*","a\'"], ["*","98765432\'"], ["*","5432\'"], ["*",";"]],
-     ["An error occured: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to"
+     ["An error occured: You have an error"
+     ,"check the manual that corresponds to your MySQL server version"
      ,"You have an error in your SQL syntax;"
      ,"You have an error in your SQL syntax near"
      ,"MySQL server version for the right syntax to use"
-     ,"Unknown MySQL error","An error occured: "
+     ,"Unknown MySQL error"
+     ,"An error occured: DROP command"
+     ,"An error occured: No database"
      ,"valid MySQL result"
      ,"on MySQL result index","Column count doesn't match value count at row"
      ,"Column count doesn't match"
