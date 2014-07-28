@@ -1,8 +1,3 @@
-var last_target = null;
-document.addEventListener('mousedown', function(event){
-    //possibility: check that the mouse button == 2
-    last_target = event.target;
-}, true);
 
 function escapeHtml(text) {
     return text

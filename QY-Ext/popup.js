@@ -257,7 +257,7 @@ $(function() {
 //xss - dom
 //xsrf - token/captcha
 
-//2 for custom
+//2 for custom payload2 should only have one payload 
 var payload2 = [ 
     ["sql", "Test for vulnerability", "sql1",
      [["*","';--"]],

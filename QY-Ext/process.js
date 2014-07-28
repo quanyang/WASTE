@@ -2,12 +2,8 @@
 $(document).ready(function(){ 
     chrome.storage.local.get("resultStorage", function(res){
         if(res.resultStorage &&  res.resultStorage.html.length >0){
-
             $(".result").html(res.resultStorage.html); 
-
-
         }
-
     });
 
     $( ".clear" ).click(function() {
