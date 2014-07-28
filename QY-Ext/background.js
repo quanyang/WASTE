@@ -40,12 +40,12 @@ chrome.extension.onMessage.addListener(
             var index;
             var exist = false;
             for(index = 0; index< chrome.extension.getViews().length;index++){
-                if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+                if (chrome.extension.getViews()[index].location.href.match(/.*result.html.*/)){
                     exist=true; 
                 } 
             }
             if(!exist){
-                chrome.tabs.create({'url': chrome.extension.getURL('process.html')},   
+                chrome.tabs.create({'url': chrome.extension.getURL('result.html')},   
                                    function(tab) {
                                        // Tab opened.
                                        chrome.storage.local.set({'result':{id:tab.id}});

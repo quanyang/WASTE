@@ -5,14 +5,14 @@ $(function() {
         var index;
         var exist = false;
         for(index = 0; index< chrome.extension.getViews().length;index++){
-            if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+            if (chrome.extension.getViews()[index].location.href.match(/.*result.html.*/)){
                 chrome.extension.getViews()[index].chrome.tabs.getCurrent(function(tab){chrome.tabs.update(tab.id, {"selected": true})});
                 exist=true; 
                 break;
             } 
         }
         if(!exist){
-            chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+            chrome.tabs.create({'url': chrome.extension.getURL('result.html')}, function(tab) {
                 // Tab opened.
                 chrome.storage.local.set({'result':{id:tab.id}});
             });
@@ -93,8 +93,6 @@ $(function() {
                 //send message to content tab to begin attack based on payload
                 //start attack
 
-
-
                 chrome.storage.local.get("scanIndex", function(res){
                     var scanId=res.scanIndex.scanIndex;
                     res.scanIndex.scanIndex++;
@@ -114,12 +112,8 @@ $(function() {
                                                      },function(response){
                                                      }
                                                  );
-
                                              });
-
-
                 });
-
             });
         }
     });
@@ -157,12 +151,12 @@ $(function() {
                             var index;
                             var exist = false;
                             for(index = 0; index< chrome.extension.getViews().length;index++){
-                                if (chrome.extension.getViews()[index].location.href.match(/.*process.html.*/)){
+                                if (chrome.extension.getViews()[index].location.href.match(/.*result.html.*/)){
                                     exist=true; 
                                 } 
                             }
                             if(!exist){
-                                chrome.tabs.create({'url': chrome.extension.getURL('process.html')}, function(tab) {
+                                chrome.tabs.create({'url': chrome.extension.getURL('result.html')}, function(tab) {
                                     // Tab opened.
                                     chrome.storage.local.set({'result':{id:tab.id}});
                                 });

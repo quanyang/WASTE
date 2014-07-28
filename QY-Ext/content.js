@@ -209,17 +209,19 @@ function scan2(payload,url,index,payloadId) {
 
 
 function scan(payload,url,index,payloadId) {
-    //$("input:not([type='submit']),textarea,option") except for submit
-    //textarea, select(one time suffice) $('select option:selected')
+    
     chrome.extension.sendMessage({ type: 'openResult' }, function(res) {
     });
-
+    
     //console.log(payload+" "+url+" "+index+" "+payloadId);
+    //$("input:not([type='submit']),textarea,option") except for submit
+    //textarea, select(one time suffice) $('select option:selected')
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
-    //console.log(index+ " "+inputs.length+" "+payloadId +" "+ payload[3].length);
+    
     chrome.storage.local.get("scanning", function(obj){
 
         if(!obj.scanning.status||payloadId>=payload[3].length){
+
             alert("scan is completed");
             chrome.storage.local.remove('xsrfstore');
             chrome.storage.local.set({'scanning':{input:"",scanId:0,status:false,url:"",payload:"",payloadId:0,tab:0,index:0}});
@@ -239,11 +241,6 @@ function scan(payload,url,index,payloadId) {
                 , function(response) {
                 });
             //done
-
-
-
-
-
 
         }  else {
 
@@ -288,6 +285,7 @@ function scan(payload,url,index,payloadId) {
 
                     } else {
 
+                        //compare name of input with payload[3][index][0];
                         if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
 
                             inputs[index].value = payload[3][payloadId][1];
@@ -300,8 +298,6 @@ function scan(payload,url,index,payloadId) {
                             location = url;
                         }
                     }
-                //console.log(payload[3]);
-                //compare name of input with payload[3][1];
 
             } else {
                 //else payloadId++
@@ -323,11 +319,6 @@ function scan(payload,url,index,payloadId) {
     });
 
 }
-
-
-
-
-
 
 var last;
 //onmessage for start of attack
