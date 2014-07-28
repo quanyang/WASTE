@@ -197,14 +197,13 @@ function scan2(payload,url,index,payloadId) {
 
         inputs[index].value = payload[3][payloadId][1];
 
-        var str = $(inputs[index]).closest("form").serialize();
-        console.log(str);
-
-
-        chrome.extension.sendMessage({
-            newWindow: [
-                 location.protocol+location.hostname+location.pathname+"?"+str
-            ]});  
+        if(payload[0]=="xss"){
+            var str = $(inputs[index]).closest("form").serialize();
+            chrome.extension.sendMessage({
+                newWindow: [
+                    location.protocol+location.hostname+location.pathname+"?"+str
+                ]});  
+        }
         inputs[index].style.outline = "none";
         inputs[index].style.border = "red 2px solid";
         inputs[index].style.boxShadow  = "0 0 10px red";
