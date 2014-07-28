@@ -71,6 +71,10 @@ chrome.extension.onMessage.addListener(
                                    });
             }
         }
+        if(message.newWindow){
+            chrome.tabs.create({"url" : message.newWindow[0]});  
+
+        }
     }
 );
 
