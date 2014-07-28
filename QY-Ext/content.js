@@ -41,12 +41,9 @@ function checkIfShouldScan(tabId){
                 //payload[4] = signature to detect ( differential detection : @save[1] and @compare[1] ) 
                 if (obj.scanning.payload[4][index2].match(/^@XSS,/)){
 
-
                     //XSS
-
-
                     var toScan=obj.scanning.payload[4][index2].split(",");
-                    if($("#"+toScan[1]).length){
+                    if($("#"+toScan[1])&&$("#"+toScan[1]).length){
                         if(toScan.length>2){
                             var x=2;
                             var vuln=true;
@@ -71,11 +68,9 @@ function checkIfShouldScan(tabId){
 
                         }
 
-                    }else {
+                    } else {
                         location = attackUrl;
                     }
-
-
                     //END OF XSS
 
 
@@ -355,7 +350,7 @@ chrome.runtime.onMessage.addListener(
         }
         if( request.type=="highlight"){
             if( last )
-            last.css("outline","none").css("border","").css("boxShadow","");
+                last.css("outline","none").css("border","").css("boxShadow","");
             last = $(":input[name='"+request.name+"']");
             $(":input[name='"+request.name+"']").css("outline","none");
             $(":input[name='"+request.name+"']").css("border" , "#09f 1px solid");
