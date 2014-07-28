@@ -262,22 +262,31 @@ var payload2 = [
     ["sql", "Test for vulnerability", "sql1",
      [["*","';--"]],
      ["An error occured: You have an error"
-     ,"check the manual that corresponds to your MySQL server version"
-     ,"You have an error in your SQL syntax;"
-     ,"You have an error in your SQL syntax near"
-     ,"MySQL server version for the right syntax to use"
-     ,"Unknown MySQL error"
-     ,"An error occured: DROP command"
-     ,"An error occured: No database"
-     ,"valid MySQL result"
-     ,"on MySQL result index"
-     ,"Column count doesn't match value count at row"
-     ,"Column count doesn't match"
-     ,"supplied argument is not a valid MySQL"
-     ,"Warning.*mysql_.*"]
+      ,"check the manual that corresponds to your MySQL server version"
+      ,"You have an error in your SQL syntax;"
+      ,"You have an error in your SQL syntax near"
+      ,"MySQL server version for the right syntax to use"
+      ,"Unknown MySQL error"
+      ,"An error occured: DROP command"
+      ,"An error occured: No database"
+      ,"valid MySQL result"
+      ,"on MySQL result index"
+      ,"Column count doesn't match value count at row"
+      ,"Column count doesn't match"
+      ,"supplied argument is not a valid MySQL"
+      ,"Warning.*mysql_.*"]
     ],
     ["sql", "Login Field","sql2",
-     [["^.*username.*$","' or '1' = '1"]]
+     [["^.*username.*$","' or '1' = '1"]],
+     ["An error occured: "]
+    ],
+    ["sql", "Blind Injection (Time: Benchmark)", "sql3",
+     [["*", "1'; SELECT BENCHMARK(123456789,RAND());#"]],
+     ["An error occured: FUNCTION"]
+    ],
+    ["sql", "Blind Injection (Time: Sleep)", "sql4",
+     [["*", "1' OR SLEEP(4);#"]],
+     ["An error occured: FUNCTION"]
     ],
     ["xss", "Test for vulnerability","xss1",
      [["*","<div id='w1231' href='w1231' src='w1231'></div>"]],
@@ -313,23 +322,25 @@ var payload2 = [
 
 var payload = [ 
     ["sql", "Test for vulnerability", "sql1",
-     [["*","';--"],["*","'--"],["*","1'1"], ["*", "1\'"], ["*","a\'"], ["*","98765432\'"], ["*","5432\'"], ["*",";"]],
+     [["*","';--"],["*","'--"],["*","1'1"], ["*", "1\'"], ["*","a\'"], ["*","98765432\'"], ["*","5432\'"], ["*",";"], ["*","1' AND cs2107_sleep(15) IS NULL;#"]],
      ["An error occured: You have an error"
-     ,"check the manual that corresponds to your MySQL server version"
-     ,"You have an error in your SQL syntax;"
-     ,"You have an error in your SQL syntax near"
-     ,"MySQL server version for the right syntax to use"
-     ,"Unknown MySQL error"
-     ,"An error occured: DROP command"
-     ,"An error occured: No database"
-     ,"valid MySQL result"
-     ,"on MySQL result index","Column count doesn't match value count at row"
-     ,"Column count doesn't match"
-     ,"supplied argument is not a valid MySQL"
-     ,"Warning.*mysql_.*"]
+      ,"check the manual that corresponds to your MySQL server version"
+      ,"You have an error in your SQL syntax;"
+      ,"You have an error in your SQL syntax near"
+      ,"MySQL server version for the right syntax to use"
+      ,"Unknown MySQL error"
+      ,"An error occured: DROP command"
+      ,"An error occured: No database"
+      ,"An error occured: FUNCTION"
+      ,"valid MySQL result"
+      ,"on MySQL result index"
+      ,"Column count doesn't match value count at row"
+      ,"supplied argument is not a valid MySQL"
+      ,"Warning.*mysql_.*"]
     ],
     ["sql", "Login Field","sql2",
-     [["^.*username.*$","' or '1' = '1"]]
+     [["^.*username.*$","' or '1' = '1"]],
+     ["An error occured: "]
     ],
     ["xss", "Test for vulnerability","xss1",
      [["*","<div id='w1231' href='w1231' src='w1231'></div>"]],
