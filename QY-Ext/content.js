@@ -193,31 +193,39 @@ function scan2(payload,url,index,payloadId) {
         inputs[index].value = payload[3][payloadId][1];
 
         if(payload[0]=="xss"){
-            var str = $(inputs[index]).closest("form").serialize();
-            chrome.extension.sendMessage({
-                newWindow: [
-                    location.protocol+location.hostname+location.pathname+"?"+str
-                ]});  
+            var method =    $(inputs[index]).closest("form").attr("method");
+            $(inputs[index]).closest("form").attr("target","_blank");
+            $(inputs[index]).closest("form").attr("method","get");
+            HTMLFormElement.prototype.submit.call(inputs[index].form);  
+
+            if(method!="get")
+                $(inputs[index]).closest("form").attr("method",method);
+
+            inputs[index].value = payload[3][payloadId][1];
+            $(inputs[index]).closest("form").attr("target","");
+            HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+        } else {     
+            inputs[index].style.outline = "none";
+            inputs[index].style.border = "red 2px solid";
+            inputs[index].style.boxShadow  = "0 0 10px red";
+            HTMLFormElement.prototype.submit.call(inputs[index].form);     
         }
-        inputs[index].style.outline = "none";
-        inputs[index].style.border = "red 2px solid";
-        inputs[index].style.boxShadow  = "0 0 10px red";
-        HTMLFormElement.prototype.submit.call(inputs[index].form);     
 
     } 
 }
 
 
 function scan(payload,url,index,payloadId) {
-    
+
     chrome.extension.sendMessage({ type: 'openResult' }, function(res) {
     });
-    
+
     //console.log(payload+" "+url+" "+index+" "+payloadId);
     //$("input:not([type='submit']),textarea,option") except for submit
     //textarea, select(one time suffice) $('select option:selected')
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
-    
+
     chrome.storage.local.get("scanning", function(obj){
 
         if(!obj.scanning.status||payloadId>=payload[3].length){
