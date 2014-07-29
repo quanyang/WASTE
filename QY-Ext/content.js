@@ -176,43 +176,46 @@ function checkIfShouldScan(tabId){
         }
     });
 }
-function scan2(payload,url,index,payloadId) {
+function scan2(payload,url,indexx,payloadId) {
+    console.log(payload);
     inputs = $("input,select option:selected,textarea").not("input[type='submit']").not("input[type='button']").not("input[type='reset']");
-    if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
-        chrome.storage.local.get("autofill",function(obj){
-            var setting = JSON.parse(obj.autofill.settings);
-            $.each(setting,function(key,value){
-                $('input').filter(function() {
-                    return (new RegExp(key,"i")).test($(this).attr('name'));
-                }).val(value);
+
+    $.each(inputs,function(index,obj){
+        if (inputs[index].name.match(new RegExp(payload[3][payloadId][0],"i"))) {
+            chrome.storage.local.get("autofill",function(obj){
+                var setting = JSON.parse(obj.autofill.settings);
+                $.each(setting,function(key,value){
+                    $('input').filter(function() {
+                        return (new RegExp(key,"i")).test($(this).attr('name'));
+                    }).val(value);
+                });
             });
-        });
 
 
-
-        inputs[index].value = payload[3][payloadId][1];
-
-        if(payload[0]=="xss"){
-            var method =    $(inputs[index]).closest("form").attr("method");
-            $(inputs[index]).closest("form").attr("target","_blank");
-            $(inputs[index]).closest("form").attr("method","get");
-            HTMLFormElement.prototype.submit.call(inputs[index].form);  
-
-            if(method!="get")
-                $(inputs[index]).closest("form").attr("method",method);
 
             inputs[index].value = payload[3][payloadId][1];
-            $(inputs[index]).closest("form").attr("target","");
-            HTMLFormElement.prototype.submit.call(inputs[index].form);     
 
-        } else {     
-            inputs[index].style.outline = "none";
-            inputs[index].style.border = "red 2px solid";
-            inputs[index].style.boxShadow  = "0 0 10px red";
-            HTMLFormElement.prototype.submit.call(inputs[index].form);     
-        }
+            if(payload[0]=="xss"){
+                var method =    $(inputs[index]).closest("form").attr("method");
+                $(inputs[index]).closest("form").attr("target","_blank");
+                $(inputs[index]).closest("form").attr("method","get");
+                HTMLFormElement.prototype.submit.call(inputs[index].form);  
 
-    } 
+                if(method!="get")
+                    $(inputs[index]).closest("form").attr("method",method);
+
+                inputs[index].value = payload[3][payloadId][1];
+                $(inputs[index]).closest("form").attr("target","");
+                HTMLFormElement.prototype.submit.call(inputs[index].form);     
+
+            } else {     
+                inputs[index].style.outline = "none";
+                inputs[index].style.border = "red 2px solid";
+                inputs[index].style.boxShadow  = "0 0 10px red";
+                HTMLFormElement.prototype.submit.call(inputs[index].form);     
+            }
+        } 
+    });
 }
 
 
